@@ -1,0 +1,1 @@
+<template>...all route</template>

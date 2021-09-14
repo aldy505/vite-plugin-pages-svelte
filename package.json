@@ -1,0 +1,72 @@
+{
+  "name": "vite-plugin-pages-svelte",
+  "version": "0.18.0",
+  "description": "File system based routing for Vite + Svelte",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aldy505/vite-plugin-pages-svelte"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "author": "Reinaldy Rafli <aldy505@tutanota.com>",
+  "files": [
+    "dist",
+    "client.d.ts"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/aldy505/vite-plugin-pages-svelte",
+  "bugs": "https://github.com/aldy505/vite-plugin-pages-svelte/issues",
+  "scripts": {
+    "dev": "npm run build -- --watch --ignore-watch examples",
+    "build": "tsup src/index.ts --dts --format cjs,esm --no-splitting --target node13.2",
+    "prepublishOnly": "npm run build",
+    "release": "npx bumpp --commit --tag --push",
+    "example:dev": "npm -C examples/vue run dev",
+    "example:build": "npm -C examples/vue run build",
+    "example:serve": "npm -C examples/vue run serve",
+    "test": "jest --runInBand",
+    "lint": "eslint --fix --ext .js,.ts,.vue,.json --ignore-path .gitignore .",
+    "format": "prettier --write --ignore-path .gitignore ."
+  },
+  "workspaces": [
+    "examples"
+  ],
+  "peerDependencies": {
+    "vite": ">=2"
+  },
+  "dependencies": {
+    "@antfu/utils": "0.3.0",
+    "debug": "4.3.2",
+    "deep-equal": "2.0.5",
+    "fast-glob": "3.2.7",
+    "json5": "2.2.0",
+    "yaml": "2.0.0-7"
+  },
+  "devDependencies": {
+    "@types/debug": "4.1.7",
+    "@types/deep-equal": "1.0.1",
+    "@types/glob-to-regexp": "0.4.1",
+    "@types/jest": "27.0.1",
+    "@types/node": "16.9.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "27.2.0",
+    "prettier": "^2.4.0",
+    "rollup": "2.56.3",
+    "ts-jest": "27.0.5",
+    "ts-node": "10.2.1",
+    "tsup": "4.14.0",
+    "typescript": "4.3.5",
+    "vite": "2.5.1"
+  }
+}
