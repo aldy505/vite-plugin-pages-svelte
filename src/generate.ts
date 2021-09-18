@@ -7,49 +7,43 @@
  */
 
 import { parse } from 'path';
-import { Route, ResolvedOptions, ResolvedPages } from './types';
+import { Route, PreRoute, ResolvedOptions, ResolvedPages } from './types';
 import { isDynamicRoute, isCatchAllRoute } from './utils';
 import { stringifyRoutes } from './stringify';
 import { sortPages } from './pages';
 
-function prepareRoutes(routes: Route[], options: ResolvedOptions, parent?: Route) {
-  for (const route of routes) {
-    if (route.name) route.name = route.name.replace(/-index$/, '');
+// function prepareRoutes(routes: Route, options: ResolvedOptions, parent?: Route): Route {
+//   for (const route of routes) {
+//     if (route.name) route.name = route.name.replace(/-index$/, '');
 
-    if (parent) route.path = route.path.replace(/^\//, '');
+//     if (parent) route.path = route.path.replace(/^\//, '');
 
-    route.props = true;
+//     if (route.children) {
+//       delete route.name;
+//       route.children = prepareRoutes(route.children, options, route);
+//     }
 
-    if (route.children) {
-      delete route.name;
-      route.children = prepareRoutes(route.children, options, route);
-    }
+//     Object.assign(route, route.customBlock || {});
 
-    Object.assign(route, route.customBlock || {});
+//     delete route.customBlock;
 
-    delete route.customBlock;
+//     Object.assign(route, options.extendRoute?.(route, parent) || {});
+//   }
 
-    Object.assign(route, options.extendRoute?.(route, parent) || {});
-  }
+//   return routes;
+// }
 
-  return routes;
-}
-
-export function generateRoutes(pages: ResolvedPages, options: ResolvedOptions): Route[] {
-  const routes: Route[] = [];
+export function generateRoutes(pages: ResolvedPages): Route {
+  const routes: Route = {};
 
   sortPages(pages).forEach((page) => {
     const pathNodes = page.route.split('/');
 
     const component = `/${page.component}`;
-    const route: Route = {
-      name: '',
+    const route: PreRoute = {
       path: '',
       component,
-      customBlock: page.customBlock,
     };
-
-    let parentRoutes = routes;
 
     for (let i = 0; i < pathNodes.length; i++) {
       const node = pathNodes[i];
@@ -58,53 +52,50 @@ export function generateRoutes(pages: ResolvedPages, options: ResolvedOptions): 
       const normalizedName = isDynamic ? node.replace(/^\[(\.{3})?/, '').replace(/\]$/, '') : node;
       const normalizedPath = normalizedName.toLowerCase();
 
-      route.name += route.name ? `-${normalizedName}` : normalizedName;
-
-      // Check nested route
-      const parent = parentRoutes.find((node) => node.name === route.name);
-
-      if (parent) {
-        parent.children = parent.children || [];
-        parentRoutes = parent.children;
-        route.path = '';
-      } else if (normalizedName.toLowerCase() === 'index' && !route.path) {
+      if (normalizedName.toLowerCase() === 'index' && !route.path) {
         route.path += '/';
       } else if (normalizedName.toLowerCase() !== 'index') {
-        if (isDynamic) {
+        if (isCatchAll) {
+          route.path += '/*';
+        } else if (isDynamic) {
           route.path += `/:${normalizedName}`;
-          // Catch-all route
-          if (isCatchAll) route.path += '(.*)*';
         } else {
           route.path += `/${normalizedPath}`;
         }
       }
     }
 
-    parentRoutes.push(route);
+    Object.assign(routes, { [route.path]: route.component });
   });
 
-  const preparedRoutes = prepareRoutes(routes, options);
+  return routes;
+  // const preparedRoutes = prepareRoutes(routes, options);
 
-  let finalRoutes = preparedRoutes.sort((a, b) => {
-    if (a.path.includes(':') && b.path.includes(':')) return b.path > a.path ? 1 : -1;
-    else if (a.path.includes(':') || b.path.includes(':')) return a.path.includes(':') ? 1 : -1;
-    else return b.path > a.path ? 1 : -1;
-  });
+  // let finalRoutes = preparedRoutes.sort((a, b) => {
+  //   if (a.path.includes(':') && b.path.includes(':')) return b.path > a.path ? 1 : -1;
+  //   else if (a.path.includes(':') || b.path.includes(':')) return a.path.includes(':') ? 1 : -1;
+  //   else return b.path > a.path ? 1 : -1;
+  // });
 
-  // replace duplicated cache all route
-  const allRoute = finalRoutes.find((i) => {
-    return isCatchAllRoute(parse(i.component).name);
-  });
-  if (allRoute) {
-    finalRoutes = finalRoutes.filter((i) => !isCatchAllRoute(parse(i.component).name));
-    finalRoutes.push(allRoute);
-  }
+  // // replace duplicated cache all route
+  // const allRoute = finalRoutes.find((i) => {
+  //   return isCatchAllRoute(parse(i.component).name);
+  // });
+  // if (allRoute) {
+  //   finalRoutes = finalRoutes.filter((i) => !isCatchAllRoute(parse(i.component).name));
+  //   finalRoutes.push(allRoute);
+  // }
 
-  return finalRoutes;
+  // return finalRoutes;
 }
 
-export function generateClientCode(routes: Route[], options: ResolvedOptions): string {
+export function generateClientCode(routes: Route, options: ResolvedOptions): string {
   const { imports, stringRoutes } = stringifyRoutes(routes, options);
 
-  return `${imports.join(';\n')};\n\nconst routes = ${stringRoutes};\n\nexport default routes;`;
+  return (
+    `import {wrap} from 'svelte-spa-router/wrap';\n` +
+    `${imports.join(';\n')}${imports.length > 1 ? ';' : ''}\n\n` +
+    `const routes = ${stringRoutes};\n\n` +
+    `export default routes;`
+  );
 }

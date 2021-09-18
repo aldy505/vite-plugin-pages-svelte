@@ -7,98 +7,58 @@
 
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/hannoeru/vite-plugin-pages)
 
-> File system based routing for Vue 3 applications using
+> File system based routing for Svelte applications using
 > [Vite](https://github.com/vitejs/vite)
+
+**⚠ Expect a lot of breaking changes, until at least 0.5.x**
 
 ## Getting Started
 
-### Vue
+### svelte
 
 Install:
 
 ```bash
-$ npm install -D vite-plugin-pages
-$ npm install vue-router@next
+$ npm install -D vite-plugin-pages-svelte
+$ npm install svelte-spa-router
 ```
 
 Add to your `vite.config.js`:
 
 ```js
-import Vue from '@vitejs/plugin-vue';
-import Pages from 'vite-plugin-pages';
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import pages from 'vite-plugin-pages-svelte';
 
-export default {
-  plugins: [Vue(), Pages()],
-};
-```
-
-### React(experimental)
-
-Install:
-
-```bash
-$ npm install -D vite-plugin-pages
-$ npm install react-router react-router-dom react-router-config
-```
-
-Add to your `vite.config.js`:
-
-```js
-import Vue from '@vitejs/plugin-vue';
-import Pages from 'vite-plugin-pages';
-
-export default {
-  plugins: [
-    Vue(),
-    Pages({
-      react: true,
-    }),
-  ],
-};
+export default defineConfig({
+  plugins: [svelte(), pages()],
+});
 ```
 
 ## Overview
 
-By default a page is a Vue component exported from a `.vue` or `.js` file in the
+By default a page is a Svelte component exported from a `.svelte` file in the
 `src/pages` directory.
 
-You can access the generated routes by importing the `virtual:generated-pages`
+You can access the generated routes by importing the `virtual:generated-pages-svelte`
 module in your application.
 
-### Vue
+### svelte
 
-```js
-import { createRouter } from 'vue-router';
-import routes from 'virtual:generated-pages';
+```html
+<script>
+  import Router from 'svelte-spa-router';
+  import routes from 'virtual:generated-pages-svelte';
+</script>
 
-const router = createRouter({
-  // ...
-  routes,
-});
+<Router {routes} />
 ```
 
 **Type**
 
 ```ts
 // vite-env.d.ts
-/// <reference types="vite-plugin-pages/client" />
-```
-
-### React
-
-```js
-import { BrowserRouter } from 'react-router-dom';
-import { renderRoutes } from 'react-router-config';
-import routes from 'virtual:generated-pages-react';
-
-ReactDOM.render(<BrowserRouter>{renderRoutes(routes)}</BrowserRouter>, document.getElementById('root'));
-```
-
-**Type**
-
-```ts
-// vite-env.d.ts
-/// <reference types="vite-plugin-pages/client-react" />
+/// <reference types="vite-plugin-pages-svelte/client" />
 ```
 
 ## Configuration
@@ -108,11 +68,11 @@ plugin:
 
 ```js
 // vite.config.js
-import Pages from 'vite-plugin-pages';
+import pages from 'vite-plugin-pages-svelte';
 
 export default {
   plugins: [
-    Pages({
+    pages({
       pagesDir: 'src/views',
     }),
   ],
@@ -172,8 +132,7 @@ export default {
 
 - **Type:** `string[]`
 - **Default:**
-  - Vue: `['vue', 'ts', 'js']`
-  - React: `['tsx', 'jsx']`
+  - `['svelte']`
 
 An array of valid file extensions for pages.
 
@@ -189,10 +148,10 @@ An array of glob patterns to exclude matches.
 src/pages/
   ├── users/
   │  ├── components
-  │  │  └── form.vue
-  │  ├── [id].vue
-  │  └── index.vue
-  └── home.vue
+  │  │  └── form.svelte
+  │  ├── [id].svelte
+  │  └── index.svelte
+  └── home.svelte
 ```
 
 ```js
@@ -200,7 +159,7 @@ src/pages/
 export default {
   plugins: [
     Pages({
-      exclude: ['**/components/*.vue'],
+      exclude: ['**/components/*.svelte'],
     }),
   ],
 };
@@ -211,8 +170,7 @@ export default {
 - **Type:** `'sync' | 'async' | (filepath: string) => 'sync' | 'async')`
 - **Default:**
   - Top level index file: `'sync'`, can turn off by option `syncIndex`.
-  - Others(Vue): `'async'`
-  - Others(React): `'sync'`
+  - `async` by default
 
 Import mode can be set to either `async`, `sync`, or a function which returns
 one of those values.
@@ -234,14 +192,7 @@ export default {
 };
 ```
 
-### routeBlockLang
-
-- **Type:** `string`
-- **Default:** `'json5'`
-
-Default SFC route block parser.
-
-### replaceSquareBrackets(experimental)
+### replaceSquareBrackets (broken)
 
 - **Type:** `boolean`
 - **Default:** `false`
@@ -250,17 +201,7 @@ Check: [#16](https://github.com/hannoeru/vite-plugin-pages/issues/16)
 
 Replace '[]' to '\_' in bundle filename
 
-### nuxtStyle
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-Use Nuxt.js style dynamic routing
-
-More details:
-[File System Routing](https://nuxtjs.org/docs/2.x/features/file-system-routing)
-
-### extendRoute
+### extendRoute (also broken)
 
 - **Type:**
   `(route: Route, parent: Route | undefined) => Route | void | Promise<Route | void>`
@@ -291,71 +232,24 @@ export default {
 };
 ```
 
-### onRoutesGenerated
+### onRoutesGenerated (broken)
 
 - **Type:** `(routes: Route[]) => Route[] | void | Promise<Route[] | void>`
 
 A function that takes a generated routes and optionally returns a modified
 generated routes.
 
-### onClientGenerated
+### onClientGenerated (dude why do u have so many broken codes)
 
 - **Type:** `(clientCode: string) => string | void | Promise<string | void>`
 
 A function that takes a generated client code and optionally returns a modified
 generated client code.
 
-### SFC custom block for Route Data
-
-Add route meta to the route by adding a `<route>` block to the SFC. This will be
-directly added to the route after it is generated, and will override it.
-
-You can specific a parser to use using `<route lang="yaml">`, or set a default
-parser using `routeBlockLang` option.
-
-- **Supported parser:** JSON, JSON5, YAML
-- **Default:** JSON5
-
-JSON/JSON5:
-
-```html
-<route> { name: "name-override", meta: { requiresAuth: false } } </route>
-```
-
-YAML:
-
-```html
-<route lang="yaml"> name: name-override meta: requiresAuth: true </route>
-```
-
-#### Syntax Highlighting `<route>`
-
-To enable syntax highlighting `<route>` in VS Code using [Vetur's Custom Code Blocks](https://vuejs.github.io/vetur/highlighting.html#custom-block) add the following snippet to your preferences...
-
-1.  update setting
-
-```
-"vetur.grammar.customBlocks": {
-   "route": "json"
- }
-```
-
-2.  Run the command in vscode
-
-`Vetur: Generate grammar from vetur.grammar.customBlocks`
-
-3.  Restart VS Code to get syntax highlighting for custom blocks.
-
 ## File System Routing
 
 Inspired by the routing from
 [NuxtJS](https://nuxtjs.org/guides/features/file-system-routing) 💚
-
-Pages automatically generates an array of routes for you to plug-in to your
-instance of Vue Router. These routes are determined by the structure of the
-files in your pages directory. Simply create `.vue` files in your pages
-directory and routes will automatically be created for you, no additional
-configuration required!
 
 For more advanced use cases, you can tailor Pages to fit the needs of your app
 through [configuration](#configuration).
@@ -371,27 +265,27 @@ through [configuration](#configuration).
 Pages will automatically map files from your pages directory to a route with the
 same name:
 
-- `src/pages/users.vue` -> `/users`
-- `src/pages/users/profile.vue` -> `/users/profile`
-- `src/pages/settings.vue` -> `/settings`
+- `src/pages/users.svelte` -> `/users`
+- `src/pages/users/profile.svelte` -> `/users/profile`
+- `src/pages/settings.svelte` -> `/settings`
 
 ### Index Routes
 
 Files with the name `index` are treated as the index page of a route:
 
-- `src/pages/index.vue` -> `/`
-- `src/pages/users/index.vue` -> `/users`
+- `src/pages/index.svelte` -> `/`
+- `src/pages/users/index.svelte` -> `/users`
 
 ### Dynamic Routes
 
 Dynamic routes are denoted using square brackets. Both directories and pages can
 be dynamic:
 
-- `src/pages/users/[id].vue` -> `/users/:id` (`/users/one`)
-- `src/pages/[user]/settings.vue` -> `/:user/settings` (`/one/settings`)
+- `src/pages/users/[id].svelte` -> `/users/:id` (`/users/one`)
+- `src/pages/[user]/settings.svelte` -> `/:user/settings` (`/one/settings`)
 
 Any dynamic parameters will be passed to the page as props. For example, given
-the file `src/pages/users/[id].vue`, the route `/users/abc` will be passed the
+the file `src/pages/users/[id].svelte`, the route `/users/abc` will be passed the
 following props:
 
 ```json
@@ -400,7 +294,7 @@ following props:
 
 ### Nested Routes
 
-We can make use of Vue Routers child routes to create nested layouts. The parent
+We can make use of svelte Routers child routes to create nested layouts. The parent
 component can be defined by giving it the same name as the directory that
 contains your child routes.
 
@@ -409,39 +303,25 @@ For example, this directory structure:
 ```
 src/pages/
   ├── users/
-  │  ├── [id].vue
-  │  └── index.vue
-  └── users.vue
+  │  ├── [id].svelte
+  │  └── index.svelte
+  └── users.svelte
 ```
 
 will result in this routes configuration:
 
-```json5
-[
-  {
-    path: '/users',
-    component: '/src/pages/users.vue',
-    children: [
-      {
-        path: '',
-        component: '/src/pages/users/index.vue',
-        name: 'users',
-      },
-      {
-        path: ':id',
-        component: '/src/pages/users/[id].vue',
-        name: 'users-id',
-      },
-    ],
-  },
-]
+```json
+{
+  '/users': wrap({ asyncComponent: () => import('/src/pages/users.svelte')})
+  '/users/:id': wrap({ asyncComponent: () => import('/src/pages/users/[id].svelte')})
+}
 ```
 
 ### Catch-all Routes
 
 Catch-all routes are denoted with square brackets containing an ellipsis:
 
-- `src/pages/[...all].vue` -> `/*` (`/non-existent-page`)
+- `src/pages/[...all].svelte` -> `/*` (`/non-existent-page`)
 
 The text after the ellipsis will be used both to name the route, and as the name
 of the prop in which the route parameters are passed.

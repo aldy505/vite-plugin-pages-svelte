@@ -1,7 +1,7 @@
 import { join, extname, resolve } from 'path';
 import { PageDirOptions, ResolvedOptions, ResolvedPages, ResolvedPage } from './types';
 import { getPageFiles } from './files';
-import { getRouteBlock, routeBlockCache, toArray, slash } from './utils';
+import { toArray, slash } from './utils';
 
 export function removePage(pages: ResolvedPages, file: string): void {
   pages.delete(file);
@@ -10,8 +10,6 @@ export function removePage(pages: ResolvedPages, file: string): void {
 export function updatePage(pages: ResolvedPages, file: string): void {
   const page = pages.get(file);
   if (page) {
-    const customBlock = routeBlockCache.get(file) || null;
-    page.customBlock = customBlock;
     pages.set(file, page);
   }
 }
@@ -55,7 +53,6 @@ async function setPage(pages: ResolvedPages, pageDir: PageDirOptions, file: stri
   const component = slash(join(pageDir.dir, file));
   const filepath = slash(resolve(options.root, component));
   const extension = extname(file).slice(1);
-  const customBlock = ['vue', 'md'].includes(extension) ? await getRouteBlock(filepath, options) : null;
 
   pages.set(filepath, {
     dir: pageDir.dir,
@@ -63,7 +60,6 @@ async function setPage(pages: ResolvedPages, pageDir: PageDirOptions, file: stri
     extension,
     filepath,
     component,
-    customBlock,
   });
 }
 

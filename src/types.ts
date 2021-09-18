@@ -1,18 +1,21 @@
+import type { WrappedComponent } from 'svelte-spa-router';
+
 export type ImportMode = 'sync' | 'async';
 export type ImportModeResolveFn = (filepath: string) => ImportMode;
 
 export interface Route {
-  name?: string;
-  path: string;
-  props?: boolean | Record<string, any> | ((to: any) => Record<string, any>);
-  component: string;
-  children?: Route[];
-  routes?: Route[];
-  exact?: boolean;
-  meta?: Record<string, unknown>;
-  customBlock?: Record<string, any> | null;
-  beforeEnter?: any;
+  [name: string]: string | ((options: WrapOptions) => WrappedComponent);
 }
+
+export interface PreRoute {
+  path: string;
+  component: string | ((options: WrapOptions) => WrappedComponent);
+}
+
+interface WrapOptions {
+  asyncComponent: () => Promise<string>;
+}
+
 export interface PageDirOptions {
   dir: string;
   baseRoute: string;
@@ -53,7 +56,7 @@ interface Options {
   /**
    * Custom generated routes
    */
-  onRoutesGenerated?: (routes: Route[]) => Route[] | void | Promise<Route[] | void>;
+  onRoutesGenerated?: (routes: Route) => Route | void | Promise<Route | void>;
   /**
    * Custom generated client code
    */
@@ -68,7 +71,6 @@ export interface ResolvedPage {
   extension: string;
   filepath: string;
   component: string;
-  customBlock: Record<string, any> | null;
 }
 
 export type ResolvedPages = Map<string, ResolvedPage>;

@@ -1,7 +1,7 @@
 import { resolveImportMode, pathToName } from './utils';
 import { ResolvedOptions, Route } from './types';
 
-const componentRE = /"component":("(.*?)")/g;
+const componentRE = /"(.+).svelte"/g;
 const hasFunctionRE = /"(?:props|beforeEnter)":("(.*?)")/g;
 
 const multilineCommentsRE = /\/\*(.|[\r\n])*?\*\//gm;
@@ -25,36 +25,32 @@ function replaceFunction(_: any, value: any) {
 }
 
 /**
- * Creates a stringified Vue Router route definition.
+ * Creates a stringified Svelte SPA Router route definition.
  */
-export function stringifyRoutes(preparedRoutes: Route[], options: ResolvedOptions) {
+export function stringifyRoutes(
+  preparedRoutes: Route,
+  options: ResolvedOptions,
+): { imports: string[]; stringRoutes: string } {
   const imports: string[] = [];
+  let stringRoutes = '{';
+  const routesValues = Object.entries(preparedRoutes);
 
-  function componentReplacer(str: string, replaceStr: string, path: string) {
-    const mode = resolveImportMode(path, options);
+  for (const route of routesValues) {
+    const [path, filePath] = route;
+    const mode = resolveImportMode(filePath as string, options);
     if (mode === 'sync') {
-      const importName = pathToName(path);
-      const importStr = `import ${importName} from '${path}'`;
-
-      // Only add import to array if it hasn't beed added before.
-      if (!imports.includes(importStr)) imports.push(importStr);
-      return str.replace(replaceStr, importName);
+      const importName = pathToName(filePath as string);
+      const importStr = `import ${importName} from '${filePath}'`;
+      if (!imports.includes(importStr)) {
+        imports.push(importStr);
+      }
+      stringRoutes += `"${path}": ${importName},`;
     } else {
-      return str.replace(replaceStr, `() => import('${path}')`);
+      stringRoutes += `"${path}": wrap({ asyncComponent: () => import('${filePath}') }),`;
     }
   }
 
-  function functionReplacer(str: string, replaceStr: string, content: string) {
-    if (content.startsWith('function')) return str.replace(replaceStr, content);
-
-    if (content.startsWith('_NuFrRa_')) return str.replace(replaceStr, content.slice(8));
-
-    return str;
-  }
-
-  const stringRoutes = JSON.stringify(preparedRoutes, replaceFunction)
-    .replace(componentRE, componentReplacer)
-    .replace(hasFunctionRE, functionReplacer);
+  stringRoutes += '}';
 
   return {
     imports,

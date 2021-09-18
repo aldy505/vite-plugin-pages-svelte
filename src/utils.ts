@@ -2,18 +2,18 @@ import fs from 'fs';
 import { resolve, basename } from 'path';
 import Debug from 'debug';
 import deepEqual from 'deep-equal';
-import { ViteDevServer } from 'vite';
+import { ModuleNode, ViteDevServer } from 'vite';
 import { OutputBundle } from 'rollup';
 import { toArray, slash } from '@antfu/utils';
 import { ResolvedOptions, Route } from './types';
-import { parseSFC, parseCustomBlock } from './parser';
 import { MODULE_ID_VIRTUAL } from './constants';
+import { ImportMode } from '.';
 
 export { toArray, slash };
 
 export const routeBlockCache = new Map<string, Record<string, any>>();
 
-export function extensionsToGlob(extensions: string[]) {
+export function extensionsToGlob(extensions: string[]): string {
   return extensions.length > 1 ? `{${extensions.join(',')}}` : extensions[0] || '';
 }
 
@@ -25,71 +25,56 @@ function isPagesDir(path: string, options: ResolvedOptions) {
   return false;
 }
 
-export function isTarget(path: string, options: ResolvedOptions) {
+export function isTarget(path: string, options: ResolvedOptions): boolean {
   return isPagesDir(path, options) && options.extensionsRE.test(path);
 }
 
 export const debug = {
-  hmr: Debug('vite-plugin-pages:hmr'),
-  parser: Debug('vite-plugin-pages:parser'),
-  gen: Debug('vite-plugin-pages:gen'),
-  options: Debug('vite-plugin-pages:options'),
-  cache: Debug('vite-plugin-pages:cache'),
-  pages: Debug('vite-plugin-pages:pages'),
+  hmr: Debug('vite-plugin-pages-svelte:hmr'),
+  parser: Debug('vite-plugin-pages-svelte:parser'),
+  gen: Debug('vite-plugin-pages-svelte:gen'),
+  options: Debug('vite-plugin-pages-svelte:options'),
+  cache: Debug('vite-plugin-pages-svelte:cache'),
+  pages: Debug('vite-plugin-pages-svelte:pages'),
 };
 
 const dynamicRouteRE = /^\[.+\]$/;
 export const nuxtDynamicRouteRE = /^_[\s\S]*$/;
 
-export function isDynamicRoute(routePath: string, nuxtStyle = false) {
-  return nuxtStyle ? nuxtDynamicRouteRE.test(routePath) : dynamicRouteRE.test(routePath);
+export function isDynamicRoute(routePath: string): boolean {
+  return dynamicRouteRE.test(routePath);
 }
 
-export function isCatchAllRoute(routePath: string, nuxtStyle = false) {
-  return nuxtStyle ? /^_$/.test(routePath) : /^\[\.{3}/.test(routePath);
+export function isCatchAllRoute(routePath: string): boolean {
+  return /^\[\.{3}all\]/.test(routePath);
 }
 
-export function resolveImportMode(filepath: string, options: ResolvedOptions) {
+export function resolveImportMode(filepath: string, options: ResolvedOptions): ImportMode {
   const mode = options.importMode;
   if (typeof mode === 'function') return mode(filepath);
 
   for (const pageDir of options.pagesDir) {
-    if (options.syncIndex && pageDir.baseRoute === '' && filepath === `/${pageDir.dir}/index.vue`) return 'sync';
+    if (options.syncIndex && pageDir.baseRoute === '' && filepath === `/${pageDir.dir}/index.svelte`) return 'sync';
   }
   return mode;
 }
 
-export function pathToName(filepath: string) {
+export function pathToName(filepath: string): string {
   return filepath.replace(/[_.\-\\/]/g, '_').replace(/[[:\]()]/g, '$');
 }
 
-export function findRouteByFilename(routes: Route[], filename: string): Route | null {
+export function findRouteByFilename(routes: Route, filename: string): Route | null {
+  const routeEntries = Object.entries(routes);
   let result = null;
-  for (const route of routes) {
-    if (filename.endsWith(route.component)) result = route;
-
-    if (!result && route.children) result = findRouteByFilename(route.children, filename);
+  for (const route of routeEntries) {
+    if (typeof route[1] === 'string' && filename.endsWith(route[1])) result = { [route[0]]: route[1] };
 
     if (result) return result;
   }
   return null;
 }
 
-export async function getRouteBlock(path: string, options: ResolvedOptions) {
-  const content = fs.readFileSync(path, 'utf8');
-  const parsed = await parseSFC(content);
-
-  const blockStr = parsed.customBlocks.find((b) => b.type === 'route');
-  if (!blockStr) return null;
-
-  const result: Record<string, any> = parseCustomBlock(blockStr, path, options);
-  debug.parser('%s: %O', path, result);
-  routeBlockCache.set(slash(path), result);
-
-  return result;
-}
-
-export function getPagesVirtualModule(server: ViteDevServer) {
+export function getPagesVirtualModule(server: ViteDevServer): ModuleNode | null {
   const { moduleGraph } = server;
   const module = moduleGraph.getModuleById(MODULE_ID_VIRTUAL);
   if (module) {
@@ -99,7 +84,7 @@ export function getPagesVirtualModule(server: ViteDevServer) {
   return null;
 }
 
-export function replaceSquareBrackets(bundle: OutputBundle) {
+export function replaceSquareBrackets(bundle: OutputBundle): void {
   const files = Object.keys(bundle).map((i) => basename(i));
   for (const chunk of Object.values(bundle)) {
     chunk.fileName = chunk.fileName.replace(/(\[|\])/g, '_');
@@ -107,15 +92,4 @@ export function replaceSquareBrackets(bundle: OutputBundle) {
       for (const file of files) chunk.code = chunk.code.replace(file, file.replace(/(\[|\])/g, '_'));
     }
   }
-}
-
-export async function isRouteBlockChanged(filePath: string, options: ResolvedOptions) {
-  debug.cache(routeBlockCache);
-  const oldRouteBlock = routeBlockCache.get(filePath);
-  const routeBlock = await getRouteBlock(filePath, options);
-
-  debug.hmr('%s old: %O', filePath, oldRouteBlock);
-  debug.hmr('%s new: %O', filePath, routeBlock);
-
-  return !deepEqual(oldRouteBlock, routeBlock);
 }

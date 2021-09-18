@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-pages-svelte",
-  "version": "0.18.0",
+  "version": "0.0.1",
   "description": "File system based routing for Vite + Svelte",
   "license": "MIT",
   "repository": {
@@ -25,12 +25,14 @@
   "bugs": "https://github.com/aldy505/vite-plugin-pages-svelte/issues",
   "scripts": {
     "dev": "npm run build -- --watch --ignore-watch examples",
-    "build": "tsup src/index.ts --dts --format cjs,esm --no-splitting --target node13.2",
+    "build": "npm run build-cjs && npm run build-esm",
+    "build-cjs": "tsup src/index.ts --dts --format cjs --no-splitting",
+    "build-esm": "tsup src/index.ts --format esm --no-splitting --target node13.2",
     "prepublishOnly": "npm run build",
     "release": "npx bumpp --commit --tag --push",
-    "example:dev": "npm -C examples run dev",
-    "example:build": "npm -C examples run build",
-    "example:serve": "npm -C examples run serve",
+    "example:dev": "npm run dev --workspace=examples",
+    "example:build": "npm run build --workspace=examples",
+    "example:serve": "npm run serve --workspace=examples",
     "test": "jest --runInBand",
     "lint": "eslint --fix --ext .js,.ts,.vue,.json --ignore-path .gitignore .",
     "format": "prettier --write --ignore-path .gitignore .",
@@ -40,15 +42,14 @@
     "examples"
   ],
   "peerDependencies": {
-    "vite": ">=2"
+    "vite": ">=2",
+    "svelte-spa-router": ">=3"
   },
   "dependencies": {
     "@antfu/utils": "0.3.0",
     "debug": "4.3.2",
     "deep-equal": "2.0.5",
-    "fast-glob": "3.2.7",
-    "json5": "2.2.0",
-    "yaml": "2.0.0-7"
+    "fast-glob": "3.2.7"
   },
   "devDependencies": {
     "@types/debug": "4.1.7",

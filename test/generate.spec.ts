@@ -2,33 +2,31 @@ import { generateRoutes, generateClientCode } from '../src/generate';
 import { resolvePages } from '../src/pages';
 import { resolveOptions } from '../src/options';
 
-const options = resolveOptions({
+const asyncOpts = resolveOptions({
   pagesDir: 'test/assets/pages',
-  extendRoute(route) {
-    if (route.name === 'about') route.props = (route) => ({ query: route.query.q });
-  },
+  importMode: 'async',
 });
-const nuxtOptions = resolveOptions({
-  pagesDir: 'test/assets/nuxt-pages',
-  nuxtStyle: true,
+
+const syncOpts = resolveOptions({
+  pagesDir: 'test/assets/pages',
+  importMode: 'sync',
 });
 
 describe('Generate', () => {
-  test('Routes', async () => {
-    const pages = await resolvePages(options);
-    const routes = generateRoutes(pages, options);
-    const code = generateClientCode(routes, options);
+  test('Routes Async', async () => {
+    const pages = await resolvePages(asyncOpts);
+    const routes = generateRoutes(pages);
+    const code = generateClientCode(routes, asyncOpts);
 
-    expect(routes).toMatchSnapshot('routes');
-    expect(code).toMatchSnapshot('client code');
+    expect(routes).toMatchSnapshot('routes async');
+    expect(code).toMatchSnapshot('client code async');
   });
+  test('Routes Sync', async () => {
+    const pages = await resolvePages(syncOpts);
+    const routes = generateRoutes(pages);
+    const code = generateClientCode(routes, syncOpts);
 
-  test('Nuxt Style Routes', async () => {
-    const pages = await resolvePages(nuxtOptions);
-    const routes = generateRoutes(pages, nuxtOptions);
-    const code = generateClientCode(routes, options);
-
-    expect(routes).toMatchSnapshot('nuxt style routes');
-    expect(code).toMatchSnapshot('nuxt style client code');
+    expect(routes).toMatchSnapshot('routes sync');
+    expect(code).toMatchSnapshot('client code sync');
   });
 });
