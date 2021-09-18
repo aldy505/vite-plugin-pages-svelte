@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aldy505/vite-plugin-pages-svelte"
+    "url": "git+https://github.com/aldy505/vite-plugin-pages-svelte.git"
   },
   "exports": {
     ".": {
@@ -29,7 +29,6 @@
     "build-cjs": "tsup src/index.ts --dts --format cjs --no-splitting",
     "build-esm": "tsup src/index.ts --format esm --no-splitting --target node13.2",
     "prepublishOnly": "npm run build",
-    "release": "npx bumpp --commit --tag --push",
     "example:dev": "npm run dev --workspace=examples",
     "example:build": "npm run build --workspace=examples",
     "example:serve": "npm run serve --workspace=examples",

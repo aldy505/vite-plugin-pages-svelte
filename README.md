@@ -1,11 +1,6 @@
 # vite-plugin-pages
 
-[![npm version](https://badgen.net/npm/v/vite-plugin-pages)](https://www.npmjs.com/package/vite-plugin-pages)
-[![monthly downloads](https://badgen.net/npm/dm/vite-plugin-pages)](https://www.npmjs.com/package/vite-plugin-pages)
-[![types](https://badgen.net/npm/types/vite-plugin-pages)](https://github.com/hannoeru/vite-plugin-pages/blob/main/src/types.ts)
-[![license](https://badgen.net/npm/license/vite-plugin-pages)](https://github.com/hannoeru/vite-plugin-pages/blob/main/LICENSE)
-
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/hannoeru/vite-plugin-pages)
+[![npm](https://img.shields.io/npm/v/vite-plugin-pages-svelte?style=flat-square) ![npm bundle size](https://img.shields.io/bundlephobia/min/vite-plugin-pages-svelte?style=flat-square) ![npm](https://img.shields.io/npm/dm/vite-plugin-pages-svelte?style=flat-square)](https://www.npmjs.com/package/vite-plugin-pages-svelte) [![Codecov](https://img.shields.io/codecov/c/github/aldy505/vite-plugin-pages-svelte?style=flat-square)](https://codecov.io/gh/aldy505/vite-plugin-pages-svelte) [![GitHub branch checks state](https://img.shields.io/github/checks-status/aldy505/vite-plugin-pages-svelte/master?style=flat-square)](https://github.com/aldy505/vite-plugin-pages-svelte/actions) [![CodeFactor](https://www.codefactor.io/repository/github/aldy505/vite-plugin-pages-svelte/badge)](https://www.codefactor.io/repository/github/aldy505/vite-plugin-pages-svelte) [![GitHub](https://img.shields.io/github/license/aldy505/vite-plugin-pages-svelte?style=flat-square)](https://github.com/aldy505/vite-plugin-pages-svelte/blob/master/LICENSE)
 
 > File system based routing for Svelte applications using
 > [Vite](https://github.com/vitejs/vite)
@@ -310,7 +305,7 @@ src/pages/
 
 will result in this routes configuration:
 
-```json
+```
 {
   '/users': wrap({ asyncComponent: () => import('/src/pages/users.svelte')})
   '/users/:id': wrap({ asyncComponent: () => import('/src/pages/users/[id].svelte')})
