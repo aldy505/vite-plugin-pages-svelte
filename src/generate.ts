@@ -18,21 +18,14 @@ function prepareRoutes(routes: Route[], options: ResolvedOptions, parent?: Route
 
     if (parent) route.path = route.path.replace(/^\//, '');
 
-    if (!options.react) route.props = true;
-
-    if (options.react) {
-      delete route.name;
-      route.routes = route.children;
-      delete route.children;
-      route.exact = true;
-    }
+    route.props = true;
 
     if (route.children) {
       delete route.name;
       route.children = prepareRoutes(route.children, options, route);
     }
 
-    if (!options.react) Object.assign(route, route.customBlock || {});
+    Object.assign(route, route.customBlock || {});
 
     delete route.customBlock;
 
@@ -43,8 +36,6 @@ function prepareRoutes(routes: Route[], options: ResolvedOptions, parent?: Route
 }
 
 export function generateRoutes(pages: ResolvedPages, options: ResolvedOptions): Route[] {
-  const { nuxtStyle } = options;
-
   const routes: Route[] = [];
 
   sortPages(pages).forEach((page) => {
@@ -62,15 +53,9 @@ export function generateRoutes(pages: ResolvedPages, options: ResolvedOptions): 
 
     for (let i = 0; i < pathNodes.length; i++) {
       const node = pathNodes[i];
-      const isDynamic = isDynamicRoute(node, nuxtStyle);
-      const isCatchAll = isCatchAllRoute(node, nuxtStyle);
-      const normalizedName = isDynamic
-        ? nuxtStyle
-          ? isCatchAll
-            ? 'all'
-            : node.replace(/^_/, '')
-          : node.replace(/^\[(\.{3})?/, '').replace(/\]$/, '')
-        : node;
+      const isDynamic = isDynamicRoute(node);
+      const isCatchAll = isCatchAllRoute(node);
+      const normalizedName = isDynamic ? node.replace(/^\[(\.{3})?/, '').replace(/\]$/, '') : node;
       const normalizedPath = normalizedName.toLowerCase();
 
       route.name += route.name ? `-${normalizedName}` : normalizedName;
@@ -108,17 +93,17 @@ export function generateRoutes(pages: ResolvedPages, options: ResolvedOptions): 
 
   // replace duplicated cache all route
   const allRoute = finalRoutes.find((i) => {
-    return isCatchAllRoute(parse(i.component).name, nuxtStyle);
+    return isCatchAllRoute(parse(i.component).name);
   });
   if (allRoute) {
-    finalRoutes = finalRoutes.filter((i) => !isCatchAllRoute(parse(i.component).name, nuxtStyle));
+    finalRoutes = finalRoutes.filter((i) => !isCatchAllRoute(parse(i.component).name));
     finalRoutes.push(allRoute);
   }
 
   return finalRoutes;
 }
 
-export function generateClientCode(routes: Route[], options: ResolvedOptions) {
+export function generateClientCode(routes: Route[], options: ResolvedOptions): string {
   const { imports, stringRoutes } = stringifyRoutes(routes, options);
 
   return `${imports.join(';\n')};\n\nconst routes = ${stringRoutes};\n\nexport default routes;`;

@@ -18,12 +18,8 @@ function resolvePageDirs(pagesDir: UserOptions['pagesDir'], root: string, exclud
 export function resolveOptions(userOptions: UserOptions, viteRoot?: string): ResolvedOptions {
   const {
     pagesDir = ['src/pages'],
-    routeBlockLang = 'json5',
     exclude = [],
     syncIndex = true,
-    replaceSquareBrackets = false,
-    nuxtStyle = false,
-    react = false,
     extendRoute,
     onRoutesGenerated,
     onClientGenerated,
@@ -31,9 +27,9 @@ export function resolveOptions(userOptions: UserOptions, viteRoot?: string): Res
 
   const root = viteRoot || slash(process.cwd());
 
-  const importMode = userOptions.importMode || (react ? 'sync' : 'async');
+  const importMode = userOptions.importMode || 'async';
 
-  const extensions = userOptions.extensions || (react ? ['tsx', 'jsx'] : ['vue', 'ts', 'js']);
+  const extensions = userOptions.extensions || ['svelte'];
 
   const extensionsRE = new RegExp(`\\.(${extensions.join('|')})$`);
 
@@ -41,15 +37,11 @@ export function resolveOptions(userOptions: UserOptions, viteRoot?: string): Res
 
   const resolvedOptions: ResolvedOptions = {
     pagesDir: resolvedPagesDir,
-    routeBlockLang,
     root,
     extensions,
     importMode,
     exclude,
     syncIndex,
-    replaceSquareBrackets,
-    nuxtStyle,
-    react,
     extensionsRE,
     extendRoute,
     onRoutesGenerated,

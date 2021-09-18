@@ -3,11 +3,11 @@ import { PageDirOptions, ResolvedOptions, ResolvedPages, ResolvedPage } from './
 import { getPageFiles } from './files';
 import { getRouteBlock, routeBlockCache, toArray, slash } from './utils';
 
-export function removePage(pages: ResolvedPages, file: string) {
+export function removePage(pages: ResolvedPages, file: string): void {
   pages.delete(file);
 }
 
-export function updatePage(pages: ResolvedPages, file: string) {
+export function updatePage(pages: ResolvedPages, file: string): void {
   const page = pages.get(file);
   if (page) {
     const customBlock = routeBlockCache.get(file) || null;
@@ -16,7 +16,7 @@ export function updatePage(pages: ResolvedPages, file: string) {
   }
 }
 
-export async function addPage(pages: ResolvedPages, file: string, options: ResolvedOptions) {
+export async function addPage(pages: ResolvedPages, file: string, options: ResolvedOptions): Promise<void> {
   file = file.replace(options.root, '');
   const pageDir = options.pagesDir.find((i) => file.startsWith(`/${i.dir}`));
   if (!pageDir) return;
@@ -24,7 +24,7 @@ export async function addPage(pages: ResolvedPages, file: string, options: Resol
   await setPage(pages, pageDir, file.replace(`/${pageDir.dir}/`, ''), options);
 }
 
-export async function resolvePages(options: ResolvedOptions) {
+export async function resolvePages(options: ResolvedOptions): Promise<Map<string, ResolvedPage>> {
   const dirs = toArray(options.pagesDir);
 
   const pages = new Map<string, ResolvedPage>();
@@ -71,7 +71,7 @@ function countSlash(value: string) {
   return (value.match(/\//g) || []).length;
 }
 
-export function sortPages(pages: ResolvedPages) {
+export function sortPages(pages: ResolvedPages): ResolvedPage[] {
   return (
     [...pages]
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

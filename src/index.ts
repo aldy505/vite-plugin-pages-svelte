@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite';
 import { Route, ResolvedOptions, UserOptions, ResolvedPages } from './types';
 import { generateRoutes, generateClientCode } from './generate';
-import { debug, replaceSquareBrackets } from './utils';
+import { debug } from './utils';
 import { resolveOptions } from './options';
 import { MODULE_IDS, MODULE_ID_VIRTUAL } from './constants';
 import { resolvePages } from './pages';
@@ -51,9 +51,6 @@ function pagesPlugin(userOptions: UserOptions = {}): Plugin {
         code: 'export default {};',
         map: null,
       };
-    },
-    generateBundle(_options, bundle) {
-      if (options.replaceSquareBrackets) replaceSquareBrackets(bundle);
     },
   };
 }

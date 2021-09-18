@@ -29,7 +29,7 @@ interface Options {
   pagesDir: string | (string | PageDirOptions)[];
   /**
    * Valid file extensions for page components.
-   * @default ['vue', 'js']
+   * @default ['svelte']
    */
   extensions: string[];
   /**
@@ -46,27 +46,6 @@ interface Options {
    * @default true
    */
   syncIndex: boolean;
-  /**
-   * Use Nuxt.js style dynamic routing
-   * @default false
-   */
-  nuxtStyle: boolean;
-  /**
-   * Set default route block parser, or use `<route lang=xxx>` in SFC route block
-   * @default 'json5'
-   */
-  routeBlockLang: 'json5' | 'json' | 'yaml' | 'yml';
-  /**
-   * Replace '[]' to '_' in bundle chunk filename
-   * Experimental feature
-   * @default true
-   */
-  replaceSquareBrackets: boolean;
-  /**
-   * Generate React Route
-   * @default false
-   */
-  react: boolean;
   /**
    * Extend route records
    */

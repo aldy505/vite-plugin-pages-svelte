@@ -1,7 +1,6 @@
 import JSON5 from 'json5';
 import YAML from 'yaml';
 
-import type { SFCDescriptor, SFCBlock } from '@vue/compiler-sfc';
 import type { ResolvedOptions } from './types';
 
 export async function parseSFC(code: string): Promise<SFCDescriptor> {

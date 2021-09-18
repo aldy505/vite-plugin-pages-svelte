@@ -8,7 +8,7 @@ export function handleHMR(
   pages: ResolvedPages,
   options: ResolvedOptions,
   clearRoutes: () => void,
-) {
+): void {
   const { ws, watcher } = server;
 
   function fullReload() {
@@ -38,7 +38,7 @@ export function handleHMR(
   });
   watcher.on('change', async (file) => {
     const path = slash(file);
-    if (isTarget(path, options) && !options.react) {
+    if (isTarget(path, options)) {
       const needReload = await isRouteBlockChanged(path, options);
       if (needReload) {
         updatePage(pages, path);
