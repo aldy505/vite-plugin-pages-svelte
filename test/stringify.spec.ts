@@ -1,5 +1,5 @@
+import type { PreRoute } from '../src/types/route';
 import { stringifyRoutes } from '../src/stringify';
-import { PreRoute } from '../src/types/route';
 
 describe('Stringify routes', () => {
   test('Should stringify', () => {

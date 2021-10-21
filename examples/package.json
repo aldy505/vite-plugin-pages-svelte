@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch ../../dist/*.js -x 'cross-env DEBUG=vite-plugin-pages:* vite'",
-    "build": "cross-env DEBUG=vite-plugin-pages vite build",
+    "dev": "nodemon --watch ../../dist/*.js -x 'cross-env DEBUG=vite-plugin-pages-svelte:* vite'",
+    "build": "cross-env DEBUG=vite-plugin-pages-svelte vite build",
     "serve": "vite preview"
   },
   "devDependencies": {

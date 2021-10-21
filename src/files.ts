@@ -21,7 +21,6 @@ export async function getPageDirs(
   exclude: string[],
 ): Promise<PageDirOptions[]> {
   const dirs = await traverseDir(resolve(root, pageDirOptions.baseRoute, pageDirOptions.dir), getIgnore(exclude));
-  console.log(dirs);
   const pageDirs = dirs.map((dir) => ({
     ...pageDirOptions,
     dir,
@@ -52,6 +51,6 @@ export async function getPageFiles(path: string, options: ResolvedOptions): Prom
  */
 export function fromSinglePage(path: string, options: ResolvedOptions): FileOutput {
   const { exclude, extensions } = options;
-  if (exclude.includes(path) && extensions.length > 0 && !containsExtension(path, extensions)) return { path: '' };
+  if (exclude.includes(path) || (extensions.length > 0 && !containsExtension(path, extensions))) return { path: '' };
   return { path };
 }

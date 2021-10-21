@@ -7,12 +7,7 @@ Object {
     "svelte",
   ],
   "extensionsRE": /\\\\\\.\\(svelte\\)\\$/,
-  "pagesDir": Array [
-    Object {
-      "baseRoute": "",
-      "dir": "test/assets/pages",
-    },
-  ],
+  "pagesDir": "test/assets/pages",
   "root": Any<String>,
   "syncIndex": true,
 }

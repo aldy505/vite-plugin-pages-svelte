@@ -3,18 +3,25 @@ import type { FileOutput } from './types/page';
 import { isDynamicRoute, isCatchAllRoute } from './utils/validate';
 import { stringifyRoutes } from './stringify';
 import { haveChildren } from './crawler/crawler';
+import { extname } from 'path';
 
 export function generateRoutes(pages: FileOutput[]): PreRoute[] {
   const routes: PreRoute[] = [];
 
   for (let i = 0; i < pages.length; i++) {
-    const node = pages[i].path;
+    const node = pages[i].path.split('/')[pages[i].path.split('/').length - 1];
     const isDynamic = isDynamicRoute(node);
     const isCatchAll = isCatchAllRoute(node);
-    const normalizedName = isDynamic ? node.replace(/^\[(\.{3})?/, '').replace(/\]$/, '') : node;
+    const fileExt = extname(node);
+    const normalizedName = isDynamic
+      ? node
+          .replace(/^\[(\.{3})?/, '')
+          .replace(/\]$/, '')
+          .replace(fileExt, '')
+      : node.replace(fileExt, '');
     const normalizedPath = normalizedName.toLowerCase();
     let name: string;
-    if (normalizedName.toLowerCase() === 'index' && !node) {
+    if (normalizedPath === 'index') {
       name = 'index';
     } else {
       if (isCatchAll) {
@@ -33,9 +40,9 @@ export function generateRoutes(pages: FileOutput[]): PreRoute[] {
       });
       continue;
     }
+
     routes.push({
       name,
-      path: pages[i].path,
       children: generateRoutes(pages[i].children as FileOutput[]),
     });
   }
@@ -47,7 +54,6 @@ export function generateClientCode(routes: PreRoute[]): string {
   const { imports, stringRoutes } = stringifyRoutes(routes);
 
   return (
-    `import {wrap} from 'svelte-spa-router/wrap';\n` +
     `${imports.join(';\n')}${imports.length > 1 ? ';' : ''}\n\n` +
     `const routes = ${stringRoutes};\n\n` +
     `export default routes;`

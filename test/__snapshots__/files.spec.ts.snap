@@ -1,30 +1,80 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Get files Pages file: page files 1`] = `
-Array [
-  "[...all].svelte",
-  "[sensor]/[...all].svelte",
-  "[sensor]/current.svelte",
-  "[userId].svelte",
-  "about.svelte",
-  "about/index.svelte",
-  "blog/[id].svelte",
-  "blog/index.svelte",
-  "blog/today/index.svelte",
-  "components.svelte",
-  "index.svelte",
-]
-`;
-
-exports[`Get page dirs With glob: glob dirs 1`] = `
+exports[`Files getPageDirs: glob dirs 1`] = `
 Array [
   Object {
     "baseRoute": "",
-    "dir": "test/assets/deep-pages/bar/pages",
+    "dir": "foo",
   },
   Object {
     "baseRoute": "",
-    "dir": "test/assets/deep-pages/foo/pages",
+    "dir": "bar",
+  },
+]
+`;
+
+exports[`Files getPageFiles: page files 1`] = `
+Array [
+  Object {
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about.svelte",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about/index.svelte",
+      },
+    ],
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about",
+  },
+  Object {
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/index.svelte",
+  },
+  Object {
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[userId].svelte",
+  },
+  Object {
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/components.svelte",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[sensor]/current.svelte",
+      },
+      Object {
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[sensor]/[...all].svelte",
+      },
+    ],
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[sensor]",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/index.svelte",
+      },
+      Object {
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/[id].svelte",
+      },
+      Object {
+        "children": Array [
+          Object {
+            "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/today/index.svelte",
+          },
+        ],
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/today",
+      },
+    ],
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog",
+  },
+  Object {
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[...all].svelte",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/__test__/index.svelte",
+      },
+    ],
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/__test__",
   },
 ]
 `;

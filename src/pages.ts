@@ -2,25 +2,18 @@ import type { ResolvedOptions } from './types/options';
 import type { FileOutput } from './types/page';
 import { resolve } from 'path';
 import { getPageFiles } from './files';
-import { toArray, slash } from './utils/convert';
+import { slash } from './utils/convert';
 
 export async function resolvePages(options: ResolvedOptions): Promise<FileOutput[]> {
-  const dirs = toArray(options.pagesDir);
-
   const pages: FileOutput[] = [];
 
-  const pageDirFiles = dirs.map(async (pageDir) => {
-    const pagePath = slash(resolve(options.root, pageDir));
-    return {
-      pageDir,
-      files: await getPageFiles(pagePath, options),
-    };
-  });
+  const pageDirFiles = {
+    pageDir: options.pagesDir,
+    files: await getPageFiles(slash(resolve(options.root, options.pagesDir)), options),
+  };
 
-  for await (const pageDir of pageDirFiles) {
-    for (const file of pageDir.files) {
-      pages.push(file);
-    }
+  for (const file of pageDirFiles.files) {
+    pages.push(file);
   }
 
   const routes: string[] = [];
@@ -38,5 +31,6 @@ export function addPage(pages: FileOutput[], newPage: FileOutput): void {
 }
 
 export function removePage(pages: FileOutput[], oldPage: FileOutput): void {
-  pages = pages.filter((o) => o.path !== oldPage.path);
+  const find = pages.findIndex((o) => o.path === oldPage.path);
+  pages.splice(find, 1);
 }

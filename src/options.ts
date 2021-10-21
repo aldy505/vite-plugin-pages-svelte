@@ -1,18 +1,5 @@
 import type { UserOptions, ResolvedOptions } from './types/options';
-import type { PageDirOptions } from './types/page';
-import { getPageDirs } from './files';
 import { slash } from './utils/convert';
-
-/**
- *
- * @param pagesDir
- * @param root
- * @param exclude
- * @returns
- */
-async function resolvePageDirs(pagesDir: string, root: string, exclude: string[]): Promise<PageDirOptions[]> {
-  return await getPageDirs({ baseRoute: '', dir: pagesDir }, root, exclude);
-}
 
 /**
  *
@@ -29,10 +16,8 @@ export async function resolveOptions(userOptions: UserOptions, viteRoot?: string
 
   const extensionsRE = new RegExp(`\\.(${extensions.join('|')})$`);
 
-  const resolvedPagesDir = await resolvePageDirs(slash(pagesDir), root, exclude);
-
   const resolvedOptions: ResolvedOptions = {
-    pagesDir: resolvedPagesDir[0].dir,
+    pagesDir,
     root,
     extensions,
     exclude,

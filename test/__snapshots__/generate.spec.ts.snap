@@ -1,58 +1,91 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Generate Routes Async: client code async 1`] = `
-"import {wrap} from 'svelte-spa-router/wrap';
-import _test_assets_pages_index_svelte from '/test/assets/pages/index.svelte'
-
-const routes = {\\"/*\\": wrap({ asyncComponent: () => import('/test/assets/pages/[...all].svelte') }),\\"/:userId\\": wrap({ asyncComponent: () => import('/test/assets/pages/[userId].svelte') }),\\"/about\\": wrap({ asyncComponent: () => import('/test/assets/pages/about/index.svelte') }),\\"/components\\": wrap({ asyncComponent: () => import('/test/assets/pages/components.svelte') }),\\"/\\": _test_assets_pages_index_svelte,\\"/:sensor/*\\": wrap({ asyncComponent: () => import('/test/assets/pages/[sensor]/[...all].svelte') }),\\"/:sensor/current\\": wrap({ asyncComponent: () => import('/test/assets/pages/[sensor]/current.svelte') }),\\"/blog/:id\\": wrap({ asyncComponent: () => import('/test/assets/pages/blog/[id].svelte') }),\\"/blog\\": wrap({ asyncComponent: () => import('/test/assets/pages/blog/index.svelte') }),\\"/blog/today\\": wrap({ asyncComponent: () => import('/test/assets/pages/blog/today/index.svelte') }),};
-
-export default routes;"
-`;
-
-exports[`Generate Routes Async: routes async 1`] = `
-Object {
-  "/": "/test/assets/pages/index.svelte",
-  "/*": "/test/assets/pages/[...all].svelte",
-  "/:sensor/*": "/test/assets/pages/[sensor]/[...all].svelte",
-  "/:sensor/current": "/test/assets/pages/[sensor]/current.svelte",
-  "/:userId": "/test/assets/pages/[userId].svelte",
-  "/about": "/test/assets/pages/about/index.svelte",
-  "/blog": "/test/assets/pages/blog/index.svelte",
-  "/blog/:id": "/test/assets/pages/blog/[id].svelte",
-  "/blog/today": "/test/assets/pages/blog/today/index.svelte",
-  "/components": "/test/assets/pages/components.svelte",
-}
-`;
-
 exports[`Generate Routes Sync: client code sync 1`] = `
-"import {wrap} from 'svelte-spa-router/wrap';
-import _test_assets_pages_$___all$_svelte from '/test/assets/pages/[...all].svelte';
-import _test_assets_pages_$userId$_svelte from '/test/assets/pages/[userId].svelte';
-import _test_assets_pages_about_index_svelte from '/test/assets/pages/about/index.svelte';
-import _test_assets_pages_components_svelte from '/test/assets/pages/components.svelte';
-import _test_assets_pages_index_svelte from '/test/assets/pages/index.svelte';
-import _test_assets_pages_$sensor$_$___all$_svelte from '/test/assets/pages/[sensor]/[...all].svelte';
-import _test_assets_pages_$sensor$_current_svelte from '/test/assets/pages/[sensor]/current.svelte';
-import _test_assets_pages_blog_$id$_svelte from '/test/assets/pages/blog/[id].svelte';
-import _test_assets_pages_blog_index_svelte from '/test/assets/pages/blog/index.svelte';
-import _test_assets_pages_blog_today_index_svelte from '/test/assets/pages/blog/today/index.svelte';
+"import _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_about_svelte from \\"/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about.svelte\\";
+import _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_index_svelte from \\"/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/index.svelte\\";
+import _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_$userId$_svelte from \\"/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[userId].svelte\\";
+import _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_components_svelte from \\"/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/components.svelte\\";
+import _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_$___all$_svelte from \\"/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[...all].svelte\\";
 
-const routes = {\\"/*\\": _test_assets_pages_$___all$_svelte,\\"/:userId\\": _test_assets_pages_$userId$_svelte,\\"/about\\": _test_assets_pages_about_index_svelte,\\"/components\\": _test_assets_pages_components_svelte,\\"/\\": _test_assets_pages_index_svelte,\\"/:sensor/*\\": _test_assets_pages_$sensor$_$___all$_svelte,\\"/:sensor/current\\": _test_assets_pages_$sensor$_current_svelte,\\"/blog/:id\\": _test_assets_pages_blog_$id$_svelte,\\"/blog\\": _test_assets_pages_blog_index_svelte,\\"/blog/today\\": _test_assets_pages_blog_today_index_svelte,};
+const routes = [{name: \\"/about\\", component: _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_about_svelte,},{name: \\"/about\\", nestedRoutes: [object Object]},{name: \\"index\\", component: _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_index_svelte,},{name: \\"/[userid]\\", component: _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_$userId$_svelte,},{name: \\"/components\\", component: _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_components_svelte,},{name: \\"/:sensor\\", nestedRoutes: [object Object][object Object]},{name: \\"/blog\\", nestedRoutes: [object Object][object Object][object Object]},{name: \\"/*\\", component: _home_reinaldy_repository_vite_plugin_pages_svelte_test_assets_pages_$___all$_svelte,},{name: \\"/__test__\\", nestedRoutes: [object Object]},];
 
 export default routes;"
 `;
 
 exports[`Generate Routes Sync: routes sync 1`] = `
-Object {
-  "/": "/test/assets/pages/index.svelte",
-  "/*": "/test/assets/pages/[...all].svelte",
-  "/:sensor/*": "/test/assets/pages/[sensor]/[...all].svelte",
-  "/:sensor/current": "/test/assets/pages/[sensor]/current.svelte",
-  "/:userId": "/test/assets/pages/[userId].svelte",
-  "/about": "/test/assets/pages/about/index.svelte",
-  "/blog": "/test/assets/pages/blog/index.svelte",
-  "/blog/:id": "/test/assets/pages/blog/[id].svelte",
-  "/blog/today": "/test/assets/pages/blog/today/index.svelte",
-  "/components": "/test/assets/pages/components.svelte",
-}
+Array [
+  Object {
+    "name": "/about",
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about.svelte",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "name": "index",
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about/index.svelte",
+      },
+    ],
+    "name": "/about",
+  },
+  Object {
+    "name": "index",
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/index.svelte",
+  },
+  Object {
+    "name": "/[userid]",
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[userId].svelte",
+  },
+  Object {
+    "name": "/components",
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/components.svelte",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "name": "/current",
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[sensor]/current.svelte",
+      },
+      Object {
+        "name": "/*",
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[sensor]/[...all].svelte",
+      },
+    ],
+    "name": "/:sensor",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "name": "index",
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/index.svelte",
+      },
+      Object {
+        "name": "/[id]",
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/[id].svelte",
+      },
+      Object {
+        "children": Array [
+          Object {
+            "name": "index",
+            "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/blog/today/index.svelte",
+          },
+        ],
+        "name": "/today",
+      },
+    ],
+    "name": "/blog",
+  },
+  Object {
+    "name": "/*",
+    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/[...all].svelte",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "name": "index",
+        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/__test__/index.svelte",
+      },
+    ],
+    "name": "/__test__",
+  },
+]
 `;

@@ -1,14 +1,13 @@
 import { generateRoutes, generateClientCode } from '../src/generate';
 import { resolvePages } from '../src/pages';
 import { resolveOptions } from '../src/options';
-import { resolve } from 'path';
 
 describe('Generate', () => {
   test('Routes Sync', async () => {
-    const syncOpts = await resolveOptions({
-      pagesDir: '/test/assets/pages',
+    const options = await resolveOptions({
+      pagesDir: 'test/assets/pages',
     });
-    const pages = await resolvePages(syncOpts);
+    const pages = await resolvePages(options);
     const routes = generateRoutes(pages);
     const code = generateClientCode(routes);
 

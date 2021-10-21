@@ -4,22 +4,16 @@ import { FileOutput } from '../src/types/page';
 const testPagesDir = 'test/assets/pages';
 const testDeepPagesDir = 'test/assets/deep-pages';
 
-describe('Traverse test page dirs', () => {
-  test('Page files', async () => {
+describe('Crawler', () => {
+  test('Traverse test page dirs', async () => {
     const result = await traverse(testPagesDir, ['svelte'], []);
     expect(result.sort()).toMatchSnapshot('traverse page files');
   });
-});
-
-describe('Traverse test deep pages dir', () => {
-  test('Deep pages files', async () => {
+  test('Traverse test deep pages dir', async () => {
     const result = await traverse(testDeepPagesDir, ['svelte'], []);
     expect(result.sort()).toMatchSnapshot('traverse deep pages files');
   });
-});
-
-describe('Have children', () => {
-  test('Should return true', () => {
+  test('Have children - Should return true', () => {
     const files: FileOutput = {
       path: '/',
       children: [{ path: '/about' }],
@@ -27,7 +21,7 @@ describe('Have children', () => {
     const result = haveChildren(files);
     expect(result).toBe(true);
   });
-  test('Should return false', () => {
+  test('Have children - Should return false', () => {
     const files: FileOutput = {
       path: '/',
     };

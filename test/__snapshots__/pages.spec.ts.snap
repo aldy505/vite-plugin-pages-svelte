@@ -1,37 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Crawler Traverse test deep pages dir: traverse deep pages files 1`] = `
-Array [
-  Object {
-    "children": Array [
-      Object {
-        "children": Array [
-          Object {
-            "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/deep-pages/foo/pages/index.svelte",
-          },
-        ],
-        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/deep-pages/foo/pages",
-      },
-    ],
-    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/deep-pages/foo",
-  },
-  Object {
-    "children": Array [
-      Object {
-        "children": Array [
-          Object {
-            "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/deep-pages/bar/pages/index.svelte",
-          },
-        ],
-        "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/deep-pages/bar/pages",
-      },
-    ],
-    "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/deep-pages/bar",
-  },
-]
-`;
-
-exports[`Crawler Traverse test page dirs: traverse page files 1`] = `
+exports[`Pages resolvePages: resolvePages 1`] = `
 Array [
   Object {
     "path": "/home/reinaldy/repository/vite-plugin-pages-svelte/test/assets/pages/about.svelte",
