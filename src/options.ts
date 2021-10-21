@@ -1,51 +1,43 @@
-import { resolve } from 'path';
-import { UserOptions, ResolvedOptions } from './types';
+import type { UserOptions, ResolvedOptions } from './types/options';
+import type { PageDirOptions } from './types/page';
 import { getPageDirs } from './files';
-import { toArray, slash } from './utils';
+import { slash } from './utils/convert';
 
-function resolvePageDirs(pagesDir: UserOptions['pagesDir'], root: string, exclude: string[]) {
-  pagesDir = toArray(pagesDir);
-  return pagesDir.flatMap((pagesDir) => {
-    const option = typeof pagesDir === 'string' ? { dir: pagesDir, baseRoute: '' } : pagesDir;
-
-    option.dir = slash(resolve(root, option.dir)).replace(`${root}/`, '');
-    option.baseRoute = option.baseRoute.replace(/^\//, '').replace(/\/$/, '');
-
-    return getPageDirs(option, root, exclude);
-  });
+/**
+ *
+ * @param pagesDir
+ * @param root
+ * @param exclude
+ * @returns
+ */
+async function resolvePageDirs(pagesDir: string, root: string, exclude: string[]): Promise<PageDirOptions[]> {
+  return await getPageDirs({ baseRoute: '', dir: pagesDir }, root, exclude);
 }
 
-export function resolveOptions(userOptions: UserOptions, viteRoot?: string): ResolvedOptions {
-  const {
-    pagesDir = ['src/pages'],
-    exclude = [],
-    syncIndex = true,
-    extendRoute,
-    onRoutesGenerated,
-    onClientGenerated,
-  } = userOptions;
+/**
+ *
+ * @param userOptions
+ * @param viteRoot
+ * @returns
+ */
+export async function resolveOptions(userOptions: UserOptions, viteRoot?: string): Promise<ResolvedOptions> {
+  const { pagesDir = 'src/pages', exclude = [], syncIndex = true } = userOptions;
 
   const root = viteRoot || slash(process.cwd());
-
-  const importMode = userOptions.importMode || 'async';
 
   const extensions = userOptions.extensions || ['svelte'];
 
   const extensionsRE = new RegExp(`\\.(${extensions.join('|')})$`);
 
-  const resolvedPagesDir = resolvePageDirs(pagesDir, root, exclude);
+  const resolvedPagesDir = await resolvePageDirs(slash(pagesDir), root, exclude);
 
   const resolvedOptions: ResolvedOptions = {
-    pagesDir: resolvedPagesDir,
+    pagesDir: resolvedPagesDir[0].dir,
     root,
     extensions,
-    importMode,
     exclude,
     syncIndex,
     extensionsRE,
-    extendRoute,
-    onRoutesGenerated,
-    onClientGenerated,
   };
 
   return resolvedOptions;

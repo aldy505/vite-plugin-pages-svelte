@@ -1,11 +1,15 @@
-import { ViteDevServer } from 'vite';
-import { getPagesVirtualModule, isTarget, debug, slash } from './utils';
-import { removePage, addPage } from './pages';
-import { ResolvedOptions, ResolvedPages } from './types';
+import type { ViteDevServer } from 'vite';
+import type { ResolvedOptions } from './types/options';
+import type { FileOutput } from './types/page';
+import { isTarget } from './utils/validate';
+import { slash } from './utils/convert';
+import { getPagesVirtualModule, debug } from './utils/vite';
+import { addPage, removePage } from './pages';
+import { fromSinglePage } from './files';
 
 export function handleHMR(
   server: ViteDevServer,
-  pages: ResolvedPages,
+  pages: FileOutput[],
   options: ResolvedOptions,
   clearRoutes: () => void,
 ): void {
@@ -23,7 +27,8 @@ export function handleHMR(
   watcher.on('add', async (file) => {
     const path = slash(file);
     if (isTarget(path, options)) {
-      await addPage(pages, path, options);
+      const pageFile = fromSinglePage(path, options);
+      addPage(pages, pageFile);
       debug.hmr('add', path);
       fullReload();
     }
@@ -31,20 +36,10 @@ export function handleHMR(
   watcher.on('unlink', (file) => {
     const path = slash(file);
     if (isTarget(path, options)) {
-      removePage(pages, path);
+      const pageFile = fromSinglePage(path, options);
+      removePage(pages, pageFile);
       debug.hmr('remove', path);
       fullReload();
     }
   });
-  // watcher.on('change', async (file) => {
-  //   const path = slash(file);
-  //   if (isTarget(path, options)) {
-  //     const needReload = await isRouteBlockChanged(path, options);
-  //     if (needReload) {
-  //       updatePage(pages, path);
-  //       debug.hmr('change', path);
-  //       fullReload();
-  //     }
-  //   }
-  // });
 }

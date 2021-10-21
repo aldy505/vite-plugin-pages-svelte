@@ -1,22 +1,24 @@
 import type { Plugin } from 'vite';
-import { Route, ResolvedOptions, UserOptions, ResolvedPages } from './types';
+import type { ResolvedOptions, UserOptions } from './types/options';
+import type { PreRoute } from './types/route';
+import type { FileOutput } from './types/page';
 import { generateRoutes, generateClientCode } from './generate';
-import { debug } from './utils';
+import { debug } from './utils/vite';
 import { resolveOptions } from './options';
 import { MODULE_IDS, MODULE_ID_VIRTUAL } from './constants';
 import { resolvePages } from './pages';
 import { handleHMR } from './hmr';
 
 function pagesPlugin(userOptions: UserOptions = {}): Plugin {
-  let generatedRoutes: Route | null = null;
+  let generatedRoutes: PreRoute[] | null = null;
   let options: ResolvedOptions;
-  let pages: ResolvedPages;
+  let pages: FileOutput[];
 
   return {
     name: 'vite-plugin-pages-svelte',
     enforce: 'pre',
     async configResolved({ root }) {
-      options = resolveOptions(userOptions, root);
+      options = await resolveOptions(userOptions, root);
       pages = await resolvePages(options);
       debug.options(options);
       debug.pages(pages);
@@ -36,7 +38,7 @@ function pagesPlugin(userOptions: UserOptions = {}): Plugin {
         generatedRoutes = generateRoutes(pages);
       }
 
-      const clientCode = generateClientCode(generatedRoutes, options);
+      const clientCode = generateClientCode(generatedRoutes);
       debug.gen('client code: %O', clientCode);
 
       return clientCode;
@@ -54,6 +56,6 @@ function pagesPlugin(userOptions: UserOptions = {}): Plugin {
   };
 }
 
-export * from './types';
+export * from './types/options';
 export { generateRoutes };
 export default pagesPlugin;

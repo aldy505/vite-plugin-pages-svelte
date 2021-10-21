@@ -1,79 +1,42 @@
-import { join, extname, resolve } from 'path';
-import { PageDirOptions, ResolvedOptions, ResolvedPages, ResolvedPage } from './types';
+import type { ResolvedOptions } from './types/options';
+import type { FileOutput } from './types/page';
+import { resolve } from 'path';
 import { getPageFiles } from './files';
-import { toArray, slash } from './utils';
+import { toArray, slash } from './utils/convert';
 
-export function removePage(pages: ResolvedPages, file: string): void {
-  pages.delete(file);
-}
-
-export function updatePage(pages: ResolvedPages, file: string): void {
-  const page = pages.get(file);
-  if (page) {
-    pages.set(file, page);
-  }
-}
-
-export async function addPage(pages: ResolvedPages, file: string, options: ResolvedOptions): Promise<void> {
-  file = file.replace(options.root, '');
-  const pageDir = options.pagesDir.find((i) => file.startsWith(`/${i.dir}`));
-  if (!pageDir) return;
-
-  await setPage(pages, pageDir, file.replace(`/${pageDir.dir}/`, ''), options);
-}
-
-export async function resolvePages(options: ResolvedOptions): Promise<Map<string, ResolvedPage>> {
+export async function resolvePages(options: ResolvedOptions): Promise<FileOutput[]> {
   const dirs = toArray(options.pagesDir);
 
-  const pages = new Map<string, ResolvedPage>();
+  const pages: FileOutput[] = [];
 
-  const pageDirFiles = dirs.map((pageDir) => {
-    const pagePath = slash(resolve(options.root, pageDir.dir));
+  const pageDirFiles = dirs.map(async (pageDir) => {
+    const pagePath = slash(resolve(options.root, pageDir));
     return {
-      ...pageDir,
-      files: getPageFiles(pagePath, options),
+      pageDir,
+      files: await getPageFiles(pagePath, options),
     };
   });
 
-  for (const pageDir of pageDirFiles) {
-    for (const file of pageDir.files) await setPage(pages, pageDir, file, options);
+  for await (const pageDir of pageDirFiles) {
+    for (const file of pageDir.files) {
+      pages.push(file);
+    }
   }
 
   const routes: string[] = [];
 
   for (const page of pages.values()) {
-    if (!routes.includes(page.route)) routes.push(page.route);
-    else throw new Error(`[vite-plugin-pages] duplicate route in ${page.filepath}`);
+    if (!routes.includes(page.path)) routes.push(page.path);
+    else throw new Error(`[vite-plugin-pages] duplicate route in ${page.path}`);
   }
 
   return pages;
 }
 
-async function setPage(pages: ResolvedPages, pageDir: PageDirOptions, file: string, options: ResolvedOptions) {
-  const component = slash(join(pageDir.dir, file));
-  const filepath = slash(resolve(options.root, component));
-  const extension = extname(file).slice(1);
-
-  pages.set(filepath, {
-    dir: pageDir.dir,
-    route: slash(join(pageDir.baseRoute, file.replace(options.extensionsRE, ''))),
-    extension,
-    filepath,
-    component,
-  });
+export function addPage(pages: FileOutput[], newPage: FileOutput): void {
+  pages.push(newPage);
 }
 
-function countSlash(value: string) {
-  return (value.match(/\//g) || []).length;
-}
-
-export function sortPages(pages: ResolvedPages): ResolvedPage[] {
-  return (
-    [...pages]
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(([_, value]) => value)
-      .sort((a, b) => {
-        return countSlash(a.route) - countSlash(b.route);
-      })
-  );
+export function removePage(pages: FileOutput[], oldPage: FileOutput): void {
+  pages = pages.filter((o) => o.path !== oldPage.path);
 }

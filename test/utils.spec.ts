@@ -1,9 +1,7 @@
-import { extensionsToGlob, slash, isDynamicRoute, isCatchAllRoute, pathToName } from '../src/utils';
+import { slash, pathToName } from '../src/utils/convert';
+import { isDynamicRoute, isCatchAllRoute } from '../src/utils/validate';
 
 describe('Utils', () => {
-  test('Extensions to glob', () => {
-    expect(extensionsToGlob(['svelte', 'ts', 'js'])).toBe('{svelte,ts,js}');
-  });
   test('Normalize path', () => {
     expect(slash('C:\\project\\from\\someone')).toBe('C:/project/from/someone');
   });

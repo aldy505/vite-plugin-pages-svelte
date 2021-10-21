@@ -3,14 +3,10 @@
 exports[`Options resolve: resolved options 1`] = `
 Object {
   "exclude": Array [],
-  "extendRoute": undefined,
   "extensions": Array [
     "svelte",
   ],
   "extensionsRE": /\\\\\\.\\(svelte\\)\\$/,
-  "importMode": "async",
-  "onClientGenerated": undefined,
-  "onRoutesGenerated": undefined,
   "pagesDir": Array [
     Object {
       "baseRoute": "",

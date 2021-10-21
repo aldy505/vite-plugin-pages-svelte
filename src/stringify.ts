@@ -1,59 +1,44 @@
-import { resolveImportMode, pathToName } from './utils';
-import { ResolvedOptions, Route } from './types';
+import { pathToName } from './utils/convert';
+import { PreRoute } from './types/route';
+import { haveChildren } from './crawler/crawler';
 
-const componentRE = /"(.+).svelte"/g;
-const hasFunctionRE = /"(?:props|beforeEnter)":("(.*?)")/g;
-
-const multilineCommentsRE = /\/\*(.|[\r\n])*?\*\//gm;
-const singlelineCommentsRE = /\/\/.*/g;
-
-function replaceFunction(_: any, value: any) {
-  if (value instanceof Function || typeof value === 'function') {
-    const fnBody = value
-      .toString()
-      .replace(multilineCommentsRE, '')
-      .replace(singlelineCommentsRE, '')
-      .replace(/(\t|\n|\r|\s)/g, '');
-
-    // ES6 Arrow Function
-    if (fnBody.length < 8 || fnBody.substring(0, 8) !== 'function') return `_NuFrRa_${fnBody}`;
-
-    return fnBody;
-  }
-
-  return value;
+interface StringifyOutput {
+  imports: string[];
+  stringRoutes: string;
 }
 
 /**
  * Creates a stringified Svelte SPA Router route definition.
  */
-export function stringifyRoutes(
-  preparedRoutes: Route,
-  options: ResolvedOptions,
-): { imports: string[]; stringRoutes: string } {
+export function stringifyRoutes(preparedRoutes: PreRoute[]): StringifyOutput {
   const imports: string[] = [];
-  let stringRoutes = '{';
-  const routesValues = Object.entries(preparedRoutes);
+  let stringRoutes = '[';
 
-  for (const route of routesValues) {
-    const [path, filePath] = route;
-    const mode = resolveImportMode(filePath as string, options);
-    if (mode === 'sync') {
-      const importName = pathToName(filePath as string);
-      const importStr = `import ${importName} from '${filePath}'`;
-      if (!imports.includes(importStr)) {
-        imports.push(importStr);
-      }
-      stringRoutes += `"${path}": ${importName},`;
-    } else {
-      stringRoutes += `"${path}": wrap({ asyncComponent: () => import('${filePath}') }),`;
+  for (const route of preparedRoutes) {
+    const importName = pathToName(route.path);
+    const importStr = `import ${importName} from '${route.path}'`;
+    if (!imports.includes(importStr)) {
+      imports.push(importStr);
     }
+    stringRoutes += compileRouteItem(route);
   }
 
-  stringRoutes += '}';
+  stringRoutes += ']';
 
   return {
     imports,
     stringRoutes,
   };
+}
+
+function compileRouteItem(route: PreRoute): string {
+  let out = '{';
+  if (haveChildren(route)) {
+    out += `name: "${route.name}", nestedRoutes: ${route.children?.map((o) => compileRouteItem(o)).join('')}`;
+  } else {
+    const importName = pathToName(route.path);
+    out += `name: "${route.name}", component: ${importName},`;
+  }
+  out += '},';
+  return out;
 }
