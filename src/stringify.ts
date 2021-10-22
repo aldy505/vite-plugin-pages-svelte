@@ -48,7 +48,7 @@ export function stringifyRoutes(preparedRoutes: PreRoute[]): StringifyOutput {
 function compileRouteItem(route: PreRoute): RouteItem {
   let out = '{ ';
   const imp: string[] = [];
-  
+
   if (haveChildren(route as FileOutput)) {
     const children = route.children?.sort(sortRoute).map((o) => compileRouteItem(o)) as RouteItem[];
     const nestedRoutes: string[] = [...children.map((o) => o.out.replace('name: "/",', 'name: "index",'))];

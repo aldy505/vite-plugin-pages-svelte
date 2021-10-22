@@ -6,12 +6,12 @@ import type { PreRoute } from '../types/route';
  * Then, it should prioritize /about /contact
  * Then it should prioritize /:slug /:something
  * Then just return 1 for every other edge case
- * @param {PreRoute} a 
+ * @param {PreRoute} a
  * @returns {Number}
  * @example
  * // Just put the function inside of an array sort function.
  * array.sort(sortRoute);
- * 
+ *
  */
 export function sortRoute(a: PreRoute): number {
   if (a.name === '/') return -1;

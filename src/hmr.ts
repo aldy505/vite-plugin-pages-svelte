@@ -4,8 +4,7 @@ import type { FileOutput } from './types/page';
 import { isTarget } from './utils/validate';
 import { slash } from './utils/convert';
 import { getPagesVirtualModule, debug } from './utils/vite';
-import { addPage, removePage } from './pages';
-import { fromSinglePage } from './files';
+import { resolvePages } from './pages';
 
 export function handleHMR(
   server: ViteDevServer,
@@ -27,18 +26,20 @@ export function handleHMR(
   watcher.on('add', async (file) => {
     const path = slash(file);
     if (isTarget(path, options)) {
-      const pageFile = fromSinglePage(path, options);
-      addPage(pages, pageFile);
-      debug.hmr('add', path);
+      const p = await resolvePages(options);
+      pages.length = 0;
+      pages.push(...p);
+      debug.hmr('add', p);
       fullReload();
     }
   });
-  watcher.on('unlink', (file) => {
+  watcher.on('unlink', async (file) => {
     const path = slash(file);
     if (isTarget(path, options)) {
-      const pageFile = fromSinglePage(path, options);
-      removePage(pages, pageFile);
-      debug.hmr('remove', path);
+      const p = await resolvePages(options);
+      pages.length = 0;
+      pages.push(...p);
+      debug.hmr('remove', p);
       fullReload();
     }
   });

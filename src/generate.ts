@@ -8,8 +8,8 @@ import { sortRoute } from './utils/route';
 
 /**
  * Generate
- * @param pages 
- * @returns 
+ * @param pages
+ * @returns
  */
 export function generateRoutes(pages: FileOutput[]): PreRoute[] {
   const routes: PreRoute[] = [];
@@ -58,7 +58,7 @@ export function generateRoutes(pages: FileOutput[]): PreRoute[] {
 
 /**
  * This pretty much acts as a final codegen for it to be executed by Vite.
- * @param {PreRoute[]} routes 
+ * @param {PreRoute[]} routes
  * @returns {String}
  */
 export function generateClientCode(routes: PreRoute[]): string {
