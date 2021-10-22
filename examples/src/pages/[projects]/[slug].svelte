@@ -1,1 +1,0 @@
-<p>Slug page</p>
