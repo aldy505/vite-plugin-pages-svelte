@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { resolveOptions } from '../src/options';
 
 describe('Options', () => {
@@ -5,11 +6,13 @@ describe('Options', () => {
     const options = await resolveOptions({
       pagesDir: 'test/assets/pages',
     });
-    expect(options).toMatchSnapshot(
-      {
-        root: expect.any(String),
-      },
-      'resolved options',
-    );
+    expect(options).toStrictEqual({
+      exclude: [],
+      extensions: ['svelte'],
+      extensionsRE: /\.(svelte)$/,
+      pagesDir: 'test/assets/pages',
+      root: resolve(),
+      syncIndex: true,
+    });
   });
 });

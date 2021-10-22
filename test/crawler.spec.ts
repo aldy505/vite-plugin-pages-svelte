@@ -1,18 +1,112 @@
+import { resolve } from 'path';
 import { haveChildren, traverse } from '../src/crawler/crawler';
 import { FileOutput } from '../src/types/page';
 
 const testPagesDir = 'test/assets/pages';
 const testDeepPagesDir = 'test/assets/deep-pages';
 
+const currentPath = resolve();
+
 describe('Crawler', () => {
   test('Traverse test page dirs', async () => {
     const result = await traverse(testPagesDir, ['svelte'], []);
-    expect(result.sort()).toMatchSnapshot('traverse page files');
+    expect(result.sort()).toStrictEqual([
+      {
+        path: `${currentPath}/test/assets/pages/about.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/about/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/about`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/index.svelte`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[userId].svelte`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/components.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/[sensor]`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/blog/index.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/blog/[id].svelte`,
+          },
+          {
+            children: [
+              {
+                path: `${currentPath}/test/assets/pages/blog/today/index.svelte`,
+              },
+            ],
+            path: `${currentPath}/test/assets/pages/blog/today`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/blog`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[...all].svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/__test__/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/__test__`,
+      },
+    ]);
   });
+
   test('Traverse test deep pages dir', async () => {
     const result = await traverse(testDeepPagesDir, ['svelte'], []);
-    expect(result.sort()).toMatchSnapshot('traverse deep pages files');
+    expect(result.sort()).toStrictEqual([
+      {
+        children: [
+          {
+            children: [
+              {
+                path: `${currentPath}/test/assets/deep-pages/foo/pages/index.svelte`,
+              },
+            ],
+            path: `${currentPath}/test/assets/deep-pages/foo/pages`,
+          },
+        ],
+        path: `${currentPath}/test/assets/deep-pages/foo`,
+      },
+      {
+        children: [
+          {
+            children: [
+              {
+                path: `${currentPath}/test/assets/deep-pages/bar/pages/index.svelte`,
+              },
+            ],
+            path: `${currentPath}/test/assets/deep-pages/bar/pages`,
+          },
+        ],
+        path: `${currentPath}/test/assets/deep-pages/bar`,
+      },
+    ]);
   });
+
   test('Have children - Should return true', () => {
     const files: FileOutput = {
       path: '/',
@@ -21,6 +115,7 @@ describe('Crawler', () => {
     const result = haveChildren(files);
     expect(result).toBe(true);
   });
+
   test('Have children - Should return false', () => {
     const files: FileOutput = {
       path: '/',

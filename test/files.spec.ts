@@ -1,9 +1,12 @@
+import { resolve } from 'path';
 import { slash } from '../src/utils/convert';
 import { getPageFiles, getPageDirs, fromSinglePage } from '../src/files';
 import type { ResolvedOptions } from '../src/types/options';
 
 const testPagesDir = 'test/assets/pages';
 const testDeepPagesDir = 'test/assets/deep-pages';
+
+const currentPath = resolve();
 
 describe('Files', () => {
   test('getPageFiles', async () => {
@@ -16,7 +19,69 @@ describe('Files', () => {
       syncIndex: true,
     };
     const files = await getPageFiles(testPagesDir, options);
-    expect(files.sort()).toMatchSnapshot('page files');
+    expect(files.sort()).toStrictEqual([
+      {
+        path: `${currentPath}/test/assets/pages/about.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/about/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/about`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/index.svelte`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[userId].svelte`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/components.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/[sensor]`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/blog/index.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/blog/[id].svelte`,
+          },
+          {
+            children: [
+              {
+                path: `${currentPath}/test/assets/pages/blog/today/index.svelte`,
+              },
+            ],
+            path: `${currentPath}/test/assets/pages/blog/today`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/blog`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[...all].svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/__test__/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/__test__`,
+      },
+    ]);
   });
 
   test('getPageDirs', async () => {
@@ -33,7 +98,16 @@ describe('Files', () => {
       syncIndex: true,
     };
     const dirs = await getPageDirs(pageDirOptions, options.root, options.exclude);
-    expect(dirs.sort()).toMatchSnapshot('glob dirs');
+    expect(dirs.sort()).toStrictEqual([
+      {
+        baseRoute: '',
+        dir: 'foo',
+      },
+      {
+        baseRoute: '',
+        dir: 'bar',
+      },
+    ]);
   });
 
   test('fromSinglePage - return empty', () => {
