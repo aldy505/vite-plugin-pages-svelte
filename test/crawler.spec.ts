@@ -10,37 +10,12 @@ const currentPath = resolve();
 describe('Crawler', () => {
   test('Traverse test page dirs', async () => {
     const result = await traverse(testPagesDir, ['svelte'], []);
-    expect(result.sort()).toStrictEqual([
-      {
-        path: `${currentPath}/test/assets/pages/about.svelte`,
-      },
-      {
-        children: [
-          {
-            path: `${currentPath}/test/assets/pages/about/index.svelte`,
-          },
-        ],
-        path: `${currentPath}/test/assets/pages/about`,
-      },
+    expect(result.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
       {
         path: `${currentPath}/test/assets/pages/index.svelte`,
       },
       {
-        path: `${currentPath}/test/assets/pages/[userId].svelte`,
-      },
-      {
         path: `${currentPath}/test/assets/pages/components.svelte`,
-      },
-      {
-        children: [
-          {
-            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
-          },
-          {
-            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
-          },
-        ],
-        path: `${currentPath}/test/assets/pages/[sensor]`,
       },
       {
         children: [
@@ -62,7 +37,15 @@ describe('Crawler', () => {
         path: `${currentPath}/test/assets/pages/blog`,
       },
       {
-        path: `${currentPath}/test/assets/pages/[...all].svelte`,
+        path: `${currentPath}/test/assets/pages/about.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/about/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/about`,
       },
       {
         children: [
@@ -72,12 +55,30 @@ describe('Crawler', () => {
         ],
         path: `${currentPath}/test/assets/pages/__test__`,
       },
+      {
+        path: `${currentPath}/test/assets/pages/[userId].svelte`,
+      },
+
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/[sensor]`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[...all].svelte`,
+      },
     ]);
   });
 
   test('Traverse test deep pages dir', async () => {
     const result = await traverse(testDeepPagesDir, ['svelte'], []);
-    expect(result.sort()).toStrictEqual([
+    expect(result.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
       {
         children: [
           {

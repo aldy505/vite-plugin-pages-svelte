@@ -2,6 +2,7 @@ import { resolve } from 'path';
 import { slash } from '../src/utils/convert';
 import { getPageFiles, getPageDirs, fromSinglePage } from '../src/files';
 import type { ResolvedOptions } from '../src/types/options';
+import { PageDirOptions } from '../src/types/page';
 
 const testPagesDir = 'test/assets/pages';
 const testDeepPagesDir = 'test/assets/deep-pages';
@@ -19,37 +20,12 @@ describe('Files', () => {
       syncIndex: true,
     };
     const files = await getPageFiles(testPagesDir, options);
-    expect(files.sort()).toStrictEqual([
-      {
-        path: `${currentPath}/test/assets/pages/about.svelte`,
-      },
-      {
-        children: [
-          {
-            path: `${currentPath}/test/assets/pages/about/index.svelte`,
-          },
-        ],
-        path: `${currentPath}/test/assets/pages/about`,
-      },
+    expect(files.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
       {
         path: `${currentPath}/test/assets/pages/index.svelte`,
       },
       {
-        path: `${currentPath}/test/assets/pages/[userId].svelte`,
-      },
-      {
         path: `${currentPath}/test/assets/pages/components.svelte`,
-      },
-      {
-        children: [
-          {
-            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
-          },
-          {
-            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
-          },
-        ],
-        path: `${currentPath}/test/assets/pages/[sensor]`,
       },
       {
         children: [
@@ -71,7 +47,15 @@ describe('Files', () => {
         path: `${currentPath}/test/assets/pages/blog`,
       },
       {
-        path: `${currentPath}/test/assets/pages/[...all].svelte`,
+        path: `${currentPath}/test/assets/pages/about.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/about/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/about`,
       },
       {
         children: [
@@ -80,6 +64,24 @@ describe('Files', () => {
           },
         ],
         path: `${currentPath}/test/assets/pages/__test__`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[userId].svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/[sensor]`,
+      },
+
+      {
+        path: `${currentPath}/test/assets/pages/[...all].svelte`,
       },
     ]);
   });
@@ -98,7 +100,7 @@ describe('Files', () => {
       syncIndex: true,
     };
     const dirs = await getPageDirs(pageDirOptions, options.root, options.exclude);
-    expect(dirs.sort()).toStrictEqual([
+    expect(dirs.sort((a, b) => (a.dir < b.dir ? 1 : -1))).toMatchObject<PageDirOptions[]>([
       {
         baseRoute: '',
         dir: 'foo',

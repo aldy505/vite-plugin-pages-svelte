@@ -17,37 +17,12 @@ describe('Pages', () => {
     };
 
     const result = await resolvePages(options);
-    expect(result).toStrictEqual([
-      {
-        path: `${currentPath}/test/assets/pages/about.svelte`,
-      },
-      {
-        children: [
-          {
-            path: `${currentPath}/test/assets/pages/about/index.svelte`,
-          },
-        ],
-        path: `${currentPath}/test/assets/pages/about`,
-      },
+    expect(result.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
       {
         path: `${currentPath}/test/assets/pages/index.svelte`,
       },
       {
-        path: `${currentPath}/test/assets/pages/[userId].svelte`,
-      },
-      {
         path: `${currentPath}/test/assets/pages/components.svelte`,
-      },
-      {
-        children: [
-          {
-            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
-          },
-          {
-            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
-          },
-        ],
-        path: `${currentPath}/test/assets/pages/[sensor]`,
       },
       {
         children: [
@@ -69,7 +44,15 @@ describe('Pages', () => {
         path: `${currentPath}/test/assets/pages/blog`,
       },
       {
-        path: `${currentPath}/test/assets/pages/[...all].svelte`,
+        path: `${currentPath}/test/assets/pages/about.svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/about/index.svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/about`,
       },
       {
         children: [
@@ -78,6 +61,23 @@ describe('Pages', () => {
           },
         ],
         path: `${currentPath}/test/assets/pages/__test__`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[userId].svelte`,
+      },
+      {
+        children: [
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/current.svelte`,
+          },
+          {
+            path: `${currentPath}/test/assets/pages/[sensor]/[...all].svelte`,
+          },
+        ],
+        path: `${currentPath}/test/assets/pages/[sensor]`,
+      },
+      {
+        path: `${currentPath}/test/assets/pages/[...all].svelte`,
       },
     ]);
   });

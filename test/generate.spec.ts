@@ -2,6 +2,7 @@ import { resolve } from 'path';
 import { generateRoutes, generateClientCode } from '../src/generate';
 import { resolvePages } from '../src/pages';
 import { resolveOptions } from '../src/options';
+import type { PreRoute } from '../src/types/route';
 
 const currentPath = resolve();
 const currentPathNormalized = currentPath.replace(/[/-]/g, '_');
@@ -15,7 +16,7 @@ describe('Generate', () => {
     const routes = generateRoutes(pages);
     const code = generateClientCode(routes);
 
-    expect(routes).toStrictEqual([
+    expect(routes).toMatchObject<PreRoute[]>([
       {
         children: [
           {
