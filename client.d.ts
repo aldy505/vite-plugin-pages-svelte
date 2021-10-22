@@ -1,5 +1,5 @@
 declare module 'virtual:generated-pages-svelte' {
-  import type { RouteDefinition } from 'svelte-router-spa';
-  const routes: RouteDefinition;
+  import type { Route } from 'svelte-router-spa/types/components/router';
+  const routes: Route[];
   export default routes;
 }

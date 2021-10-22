@@ -5,6 +5,8 @@
 > File system based routing for Svelte applications using
 > [Vite](https://github.com/vitejs/vite)
 
+This is a kind of fork of [vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages) for Vue, but if I was about to add a Svelte implementation to it, I will break a lot of things. Hence, it should be a good thing to create a new repository for it.
+
 **⚠ Expect a lot of breaking changes, until at least 0.5.x**
 
 ## Getting Started
@@ -56,198 +58,10 @@ module in your application.
 /// <reference types="vite-plugin-pages-svelte/client" />
 ```
 
-## Configuration
-
-To use custom configuration, pass your options to Pages when instantiating the
-plugin:
-
-```js
-// vite.config.js
-import pages from 'vite-plugin-pages-svelte';
-
-export default {
-  plugins: [
-    pages({
-      pagesDir: 'src/views',
-    }),
-  ],
-};
-```
-
-### pagesDir
-
-- **Type:** `string | (string | PageDirOptions)[]`
-- **Default:** `'src/pages'`
-
-Relative path to the pages directory. Supports globs.
-
-Can be:
-
-- single path: routes point to `/`
-- array of paths: all routes in the paths point to `/`
-- array of `PageDirOptions`, Check below 👇
-
-Specifying a glob or an array of `PageDirOptions` allow you to use multiple
-pages folder, and specify the base route to append to the path and the route
-name.
-
-**Example:**
-
-```bash
-# folder structure
-src/
-  ├── features/
-  │  └── dashboard/
-  │     ├── code/
-  │     ├── components/
-  │     └── pages/
-  ├── admin/
-  │   ├── code/
-  │   ├── components/
-  │   └── pages/
-  └── pages/
-```
-
-```js
-// vite.config.js
-export default {
-  plugins: [
-    Pages({
-      pagesDir: [
-        { dir: 'src/pages', baseRoute: '' },
-        { dir: 'src/features/**/pages', baseRoute: 'features' },
-        { dir: 'src/admin/pages', baseRoute: 'admin' },
-      ],
-    }),
-  ],
-};
-```
-
-### extensions
-
-- **Type:** `string[]`
-- **Default:**
-  - `['svelte']`
-
-An array of valid file extensions for pages.
-
-### exclude
-
-- **Type:** `string[]`
-- **Default:** `[]`
-
-An array of glob patterns to exclude matches.
-
-```bash
-# folder structure
-src/pages/
-  ├── users/
-  │  ├── components
-  │  │  └── form.svelte
-  │  ├── [id].svelte
-  │  └── index.svelte
-  └── home.svelte
-```
-
-```js
-// vite.config.js
-export default {
-  plugins: [
-    Pages({
-      exclude: ['**/components/*.svelte'],
-    }),
-  ],
-};
-```
-
-### importMode
-
-- **Type:** `'sync' | 'async' | (filepath: string) => 'sync' | 'async')`
-- **Default:**
-  - Top level index file: `'sync'`, can turn off by option `syncIndex`.
-  - `async` by default
-
-Import mode can be set to either `async`, `sync`, or a function which returns
-one of those values.
-
-To get more fine-grained control over which routes are loaded sync/async, you
-can use a function to resolve the value based on the route path. For example:
-
-```js
-// vite.config.js
-export default {
-  plugins: [
-    Pages({
-      importMode(path) {
-        // Load about page synchronously, all other pages are async.
-        return path.includes('about') ? 'sync' : 'async';
-      },
-    }),
-  ],
-};
-```
-
-### replaceSquareBrackets (broken)
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-Check: [#16](https://github.com/hannoeru/vite-plugin-pages/issues/16)
-
-Replace '[]' to '\_' in bundle filename
-
-### extendRoute (also broken)
-
-- **Type:**
-  `(route: Route, parent: Route | undefined) => Route | void | Promise<Route | void>`
-
-A function that takes a route and optionally returns a modified route. This is
-useful for augmenting your routes with extra data (e.g. route metadata).
-
-```js
-// vite.config.js
-export default {
-  // ...
-  plugins: [
-    Pages({
-      extendRoute(route, parent) {
-        if (route.path === '/') {
-          // Index is unauthenticated.
-          return route;
-        }
-
-        // Augment the route with meta that indicates that the route requires authentication.
-        return {
-          ...route,
-          meta: { auth: true },
-        };
-      },
-    }),
-  ],
-};
-```
-
-### onRoutesGenerated (broken)
-
-- **Type:** `(routes: Route[]) => Route[] | void | Promise<Route[] | void>`
-
-A function that takes a generated routes and optionally returns a modified
-generated routes.
-
-### onClientGenerated (dude why do u have so many broken codes)
-
-- **Type:** `(clientCode: string) => string | void | Promise<string | void>`
-
-A function that takes a generated client code and optionally returns a modified
-generated client code.
-
 ## File System Routing
 
 Inspired by the routing from
 [NuxtJS](https://nuxtjs.org/guides/features/file-system-routing) 💚
-
-For more advanced use cases, you can tailor Pages to fit the needs of your app
-through [configuration](#configuration).
 
 - [Basic Routing](#basic-routing)
 - [Index Routes](#index-routes)
@@ -303,15 +117,6 @@ src/pages/
   └── users.svelte
 ```
 
-will result in this routes configuration:
-
-```
-{
-  '/users': wrap({ asyncComponent: () => import('/src/pages/users.svelte')})
-  '/users/:id': wrap({ asyncComponent: () => import('/src/pages/users/[id].svelte')})
-}
-```
-
 ### Catch-all Routes
 
 Catch-all routes are denoted with square brackets containing an ellipsis:
@@ -320,6 +125,73 @@ Catch-all routes are denoted with square brackets containing an ellipsis:
 
 The text after the ellipsis will be used both to name the route, and as the name
 of the prop in which the route parameters are passed.
+
+## Configuration
+
+To use custom configuration, pass your options to Pages when instantiating the
+plugin:
+
+```js
+// vite.config.js
+import pages from 'vite-plugin-pages-svelte';
+
+export default {
+  plugins: [
+    pages({
+      // Defaults to src/pages
+      pagesDir: 'src/views',
+    }),
+  ],
+};
+```
+
+### pagesDir
+
+- **Type:** `string`
+- **Default:** `'src/pages'`
+
+Relative path to the pages directory. DOES NOT supports globs.
+
+Can be:
+
+- single path: routes point to `/`
+
+### extensions
+
+- **Type:** `string[]`
+- **Default:**
+  - `['svelte']`
+
+An array of valid file extensions for pages.
+
+### exclude
+
+- **Type:** `string[]`
+- **Default:** `[]`
+
+An array of glob patterns to exclude matches.
+
+```bash
+# folder structure
+src/pages/
+  ├── users/
+  │  ├── components
+  │  │  └── form.svelte
+  │  ├── [id].svelte
+  │  └── index.svelte
+  └── home.svelte
+```
+
+```js
+// vite.config.js
+export default {
+  plugins: [
+    Pages({
+      exclude: ['.js'],
+    }),
+  ],
+};
+```
 
 ## License
 
