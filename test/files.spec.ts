@@ -2,7 +2,6 @@ import { resolve } from 'path';
 import { slash } from '../src/utils/convert';
 import { getPageFiles, getPageDirs, fromSinglePage } from '../src/files';
 import type { ResolvedOptions } from '../src/types/options';
-import { PageDirOptions } from '../src/types/page';
 
 const testPagesDir = 'test/assets/pages';
 const testDeepPagesDir = 'test/assets/deep-pages';
@@ -19,8 +18,9 @@ describe('Files', () => {
       extensionsRE: /svelte/,
       syncIndex: true,
     };
+
     const files = await getPageFiles(testPagesDir, options);
-    expect(files.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
+    const expectedResult = [
       {
         path: `${currentPath}/test/assets/pages/index.svelte`,
       },
@@ -80,7 +80,9 @@ describe('Files', () => {
       {
         path: `${currentPath}/test/assets/pages/[...all].svelte`,
       },
-    ]);
+    ];
+
+    expectedResult.forEach((i) => expect(files).toContainEqual(i));
   });
 
   test('getPageDirs', async () => {
@@ -97,7 +99,8 @@ describe('Files', () => {
       syncIndex: true,
     };
     const dirs = await getPageDirs(pageDirOptions, options.root, options.exclude);
-    expect(dirs.sort((a, b) => (a.dir < b.dir ? 1 : -1))).toMatchObject<PageDirOptions[]>([
+
+    const expectedResult = [
       {
         baseRoute: '',
         dir: 'foo',
@@ -106,7 +109,9 @@ describe('Files', () => {
         baseRoute: '',
         dir: 'bar',
       },
-    ]);
+    ];
+
+    expectedResult.forEach((i) => expect(dirs).toContainEqual(i));
   });
 
   test('fromSinglePage - return empty', () => {

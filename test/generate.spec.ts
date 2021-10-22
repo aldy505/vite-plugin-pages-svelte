@@ -1,9 +1,7 @@
 import { resolve } from 'path';
 import { generateRoutes, generateClientCode } from '../src/generate';
 import { resolvePages } from '../src/pages';
-import { sortRoute } from '../src/utils/route';
 import { resolveOptions } from '../src/options';
-import type { PreRoute } from '../src/types/route';
 
 const currentPath = resolve();
 const currentPathNormalized = currentPath.replace(/[/-]/g, '_');
@@ -17,7 +15,7 @@ describe('Generate', () => {
     const routes = generateRoutes(pages);
     const code = generateClientCode(routes);
 
-    expect(routes.sort(sortRoute)).toMatchObject<PreRoute[]>([
+    const expectedRoutes = [
       {
         children: [
           {
@@ -87,7 +85,8 @@ describe('Generate', () => {
         ],
         name: '/__test__',
       },
-    ]);
+    ];
+    expectedRoutes.forEach((i) => expect(routes).toContainEqual(i));
 
     expect(code)
       .toStrictEqual(`import ${currentPathNormalized}_test_assets_pages_blog_today_index_svelte from "${currentPath}/test/assets/pages/blog/today/index.svelte";

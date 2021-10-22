@@ -10,7 +10,7 @@ const currentPath = resolve();
 describe('Crawler', () => {
   test('Traverse test page dirs', async () => {
     const result = await traverse(testPagesDir, ['svelte'], []);
-    expect(result.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
+    const expectedResult = [
       {
         path: `${currentPath}/test/assets/pages/index.svelte`,
       },
@@ -55,7 +55,6 @@ describe('Crawler', () => {
       {
         path: `${currentPath}/test/assets/pages/[userId].svelte`,
       },
-
       {
         children: [
           {
@@ -70,12 +69,14 @@ describe('Crawler', () => {
       {
         path: `${currentPath}/test/assets/pages/[...all].svelte`,
       },
-    ]);
+    ];
+
+    expectedResult.forEach((i) => expect(result).toContainEqual(i));
   });
 
   test('Traverse test deep pages dir', async () => {
     const result = await traverse(testDeepPagesDir, ['svelte'], []);
-    expect(result.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
+    const expectedResult = [
       {
         children: [
           {
@@ -102,7 +103,9 @@ describe('Crawler', () => {
         ],
         path: `${currentPath}/test/assets/deep-pages/bar`,
       },
-    ]);
+    ];
+
+    expectedResult.forEach((i) => expect(result).toContainEqual(i));
   });
 
   test('Have children - Should return true', () => {

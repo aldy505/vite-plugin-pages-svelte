@@ -17,7 +17,8 @@ describe('Pages', () => {
     };
 
     const result = await resolvePages(options);
-    expect(result.sort((a, b) => (a.path < b.path ? 1 : -1))).toStrictEqual([
+
+    const expectedResult = [
       {
         path: `${currentPath}/test/assets/pages/index.svelte`,
       },
@@ -76,7 +77,9 @@ describe('Pages', () => {
       {
         path: `${currentPath}/test/assets/pages/[...all].svelte`,
       },
-    ]);
+    ];
+
+    expectedResult.forEach((i) => expect(result).toContainEqual(i));
   });
 
   test('addPage', () => {
