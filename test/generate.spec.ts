@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { generateRoutes, generateClientCode } from '../src/generate';
 import { resolvePages } from '../src/pages';
+import { sortRoute } from '../src/utils/route';
 import { resolveOptions } from '../src/options';
 import type { PreRoute } from '../src/types/route';
 
@@ -16,7 +17,24 @@ describe('Generate', () => {
     const routes = generateRoutes(pages);
     const code = generateClientCode(routes);
 
-    expect(routes).toMatchObject<PreRoute[]>([
+    expect(routes.sort(sortRoute)).toMatchObject<PreRoute[]>([
+      {
+        children: [
+          {
+            name: '/',
+            path: `${currentPath}/test/assets/pages/about/index.svelte`,
+          },
+        ],
+        name: '/about',
+      },
+      {
+        name: '/',
+        path: `${currentPath}/test/assets/pages/index.svelte`,
+      },
+      {
+        name: '/components',
+        path: `${currentPath}/test/assets/pages/components.svelte`,
+      },
       {
         children: [
           {
@@ -38,27 +56,6 @@ describe('Generate', () => {
           },
         ],
         name: '/blog',
-      },
-      {
-        name: '/components',
-        path: `${currentPath}/test/assets/pages/components.svelte`,
-      },
-      {
-        name: '/',
-        path: `${currentPath}/test/assets/pages/index.svelte`,
-      },
-      {
-        children: [
-          {
-            name: '/',
-            path: `${currentPath}/test/assets/pages/about/index.svelte`,
-          },
-        ],
-        name: '/about',
-      },
-      {
-        name: '/about',
-        path: `${currentPath}/test/assets/pages/about.svelte`,
       },
       {
         name: '/:userId',
@@ -91,6 +88,7 @@ describe('Generate', () => {
         name: '/__test__',
       },
     ]);
+
     expect(code)
       .toStrictEqual(`import ${currentPathNormalized}_test_assets_pages_blog_today_index_svelte from "${currentPath}/test/assets/pages/blog/today/index.svelte";
 import ${currentPathNormalized}_test_assets_pages_blog_index_svelte from "${currentPath}/test/assets/pages/blog/index.svelte";
@@ -98,7 +96,6 @@ import ${currentPathNormalized}_test_assets_pages_blog_$id$_svelte from "${curre
 import ${currentPathNormalized}_test_assets_pages_components_svelte from "${currentPath}/test/assets/pages/components.svelte";
 import ${currentPathNormalized}_test_assets_pages_index_svelte from "${currentPath}/test/assets/pages/index.svelte";
 import ${currentPathNormalized}_test_assets_pages_about_index_svelte from "${currentPath}/test/assets/pages/about/index.svelte";
-import ${currentPathNormalized}_test_assets_pages_about_svelte from "${currentPath}/test/assets/pages/about.svelte";
 import ${currentPathNormalized}_test_assets_pages_$userId$_svelte from "${currentPath}/test/assets/pages/[userId].svelte";
 import ${currentPathNormalized}_test_assets_pages_$sensor$_current_svelte from "${currentPath}/test/assets/pages/[sensor]/current.svelte";
 import ${currentPathNormalized}_test_assets_pages_$sensor$_$___all$_svelte from "${currentPath}/test/assets/pages/[sensor]/[...all].svelte";
@@ -122,8 +119,6 @@ const routes = [{ name: "/blog", nestedRoutes: [{ name: "/today", nestedRoutes: 
 { name: "/about", nestedRoutes: [{ name: "index", component: ${currentPathNormalized}_test_assets_pages_about_index_svelte
 },
 ]
-},
-{ name: "/about", component: ${currentPathNormalized}_test_assets_pages_about_svelte
 },
 { name: "/:userId", component: ${currentPathNormalized}_test_assets_pages_$userId$_svelte
 },

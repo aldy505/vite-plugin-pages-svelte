@@ -37,9 +37,6 @@ describe('Crawler', () => {
         path: `${currentPath}/test/assets/pages/blog`,
       },
       {
-        path: `${currentPath}/test/assets/pages/about.svelte`,
-      },
-      {
         children: [
           {
             path: `${currentPath}/test/assets/pages/about/index.svelte`,
