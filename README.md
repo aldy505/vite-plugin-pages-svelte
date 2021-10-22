@@ -17,7 +17,7 @@ Install:
 
 ```bash
 $ npm install -D vite-plugin-pages-svelte
-$ npm install svelte-spa-router
+$ npm install svelte-router-spa
 ```
 
 Add to your `vite.config.js`:
@@ -44,7 +44,7 @@ module in your application.
 
 ```html
 <script>
-  import Router from 'svelte-spa-router';
+  import { Router } from 'svelte-router-spa';
   import routes from 'virtual:generated-pages-svelte';
 </script>
 
