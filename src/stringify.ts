@@ -2,6 +2,7 @@ import type { FileOutput } from './types/page';
 import type { PreRoute } from './types/route';
 import { pathToName } from './utils/convert';
 import { haveChildren } from './crawler/crawler';
+import { sortRoute } from './utils/route';
 
 // This is not on the types/ directory because this should only
 // be used in this file only.
@@ -45,19 +46,26 @@ export function stringifyRoutes(preparedRoutes: PreRoute[]): StringifyOutput {
  * @returns {String} To be used by stringifyRoute function
  */
 function compileRouteItem(route: PreRoute): RouteItem {
-  let out = '{';
+  let out = '{ ';
   const imp: string[] = [];
+  
   if (haveChildren(route as FileOutput)) {
-    out += `name: "${route.name}", nestedRoutes: ${route.children?.map((o) => compileRouteItem(o)).join('')}`;
+    const children = route.children?.sort(sortRoute).map((o) => compileRouteItem(o)) as RouteItem[];
+    const nestedRoutes: string[] = [...children.map((o) => o.out.replace('name: "/",', 'name: "index",'))];
+
+    out += `name: "${route.name}", nestedRoutes: [${nestedRoutes.join(',')}]\n`;
+    const imps = children?.map((o) => o.imp).flat() as string[];
+    imp.push(...imps);
   } else {
     const importName = pathToName(route.path as string);
     const importStr = `import ${importName} from "${route.path}"`;
     if (!imp.includes(importStr)) {
       imp.push(importStr);
     }
-    out += `name: "${route.name}", component: ${importName},`;
+    out += `name: "${route.name}", component: ${importName}\n`;
   }
-  out += '},';
+  out += '},\n';
+
   return {
     out,
     imp,

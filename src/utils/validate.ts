@@ -27,15 +27,13 @@ export function isTarget(path: string, options: ResolvedOptions): boolean {
   return isPagesDir(path, options) && options.extensionsRE.test(path);
 }
 
-const dynamicRouteRE = /^\[.+\]$/;
-
 /**
  * Check whether or not a routePath is a type of a dynamic route.
  * @param {String} routePath
  * @returns {Boolean}
  */
 export function isDynamicRoute(routePath: string): boolean {
-  return dynamicRouteRE.test(routePath);
+  return /^\[.+\]$/.test(routePath);
 }
 
 /**
@@ -44,7 +42,7 @@ export function isDynamicRoute(routePath: string): boolean {
  * @returns {Boolean}
  */
 export function isCatchAllRoute(routePath: string): boolean {
-  return /^\[\.{3}all\]/.test(routePath);
+  return /^\[\.{3}all\]$/.test(routePath);
 }
 
 /**
